@@ -1,0 +1,208 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "email reader",
+      "intents": [
+        {
+          "name": "GetUnreadCountIntent",
+          "slots": [
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            }
+          ],
+          "samples": [
+            "how many unread emails do I have",
+            "how many unread emails in {accountName}",
+            "unread count",
+            "check unread mail",
+            "unread emails"
+          ]
+        },
+        {
+          "name": "ReadLatestEmailsIntent",
+          "slots": [
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            },
+            {
+              "name": "limit",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "read my latest emails",
+            "read latest emails in {accountName}",
+            "read my latest {limit} emails",
+            "read my latest {limit} emails in {accountName}",
+            "read latest mail"
+          ]
+        },
+        {
+          "name": "ReadEmailBodyIntent",
+          "slots": [
+            {
+              "name": "emailIndex",
+              "type": "EMAIL_INDEX"
+            },
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            }
+          ],
+          "samples": [
+            "read email {emailIndex}",
+            "read email {emailIndex} in full",
+            "read email {emailIndex} from {accountName}",
+            "read full body of email {emailIndex}"
+          ]
+        },
+        {
+          "name": "ListLinkedAccountsIntent",
+          "samples": [
+            "list linked accounts",
+            "what accounts are linked",
+            "list my mailboxes",
+            "which email accounts are connected"
+          ]
+        },
+        {
+          "name": "SwitchAccountIntent",
+          "slots": [
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            }
+          ],
+          "samples": [
+            "switch to {accountName}",
+            "use {accountName}",
+            "set default account to {accountName}",
+            "change account to {accountName}"
+          ]
+        },
+        {
+          "name": "SetPollingIntervalIntent",
+          "slots": [
+            {
+              "name": "intervalMinutes",
+              "type": "POLLING_INTERVAL_MINUTES"
+            }
+          ],
+          "samples": [
+            "set polling interval to {intervalMinutes} minutes",
+            "check new mail every {intervalMinutes} minutes",
+            "set refresh to {intervalMinutes} minutes"
+          ]
+        },
+        {
+          "name": "AccountLinkingHelpIntent",
+          "samples": [
+            "how do I link my account",
+            "help me connect my email",
+            "link my email account",
+            "account linking help"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "name": "ACCOUNT_NAME",
+          "values": [
+            {
+              "name": {
+                "value": "personal"
+              }
+            },
+            {
+              "name": {
+                "value": "work"
+              }
+            },
+            {
+              "name": {
+                "value": "gmail"
+              }
+            },
+            {
+              "name": {
+                "value": "outlook"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POLLING_INTERVAL_MINUTES",
+          "values": [
+            {
+              "name": {
+                "value": "15"
+              }
+            },
+            {
+              "name": {
+                "value": "30"
+              }
+            },
+            {
+              "name": {
+                "value": "60"
+              }
+            }
+          ]
+        },
+        {
+          "name": "EMAIL_INDEX",
+          "values": [
+            {
+              "name": {
+                "value": "1"
+              }
+            },
+            {
+              "name": {
+                "value": "2"
+              }
+            },
+            {
+              "name": {
+                "value": "3"
+              }
+            },
+            {
+              "name": {
+                "value": "4"
+              }
+            },
+            {
+              "name": {
+                "value": "5"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "manifest": {
+    "manifestVersion": "1.0",
+    "publishingInformation": {
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Link account in Alexa app, connect mailbox via hosted web app, then test unread count, latest mail readout, and notification permission flow.",
+      "distributionCountries": [],
+      "automaticClonedLocale": {
+        "locales": [
+          {
+            "source": "en-US"
+          }
+        ]
+      },
+      "locales": {
+        "en-US": {
+          "name": "Email Reader",
+          "summary": "Read your latest emails and hear unread counts with Alexa.",
+          "description": "Email Reader connects Gmail, Outlook, and custom IMAP/POP mailboxes. Ask for unread counts, hear your latest messages, and get Alexa notifications when new mail arrives.",
+          "examplePhrases": [
+            "Alexa, open Email Reader",
+            "Alexa, ask Email Reader how many unread emails I have",
+            "Alexa, ask Email Reader to read my latest emails"
+          ],
+          "keywords": [
+            "email",
+            "mail",
+            "inbox",
+            "unread",
+            "notifications"
+          ]
+        }
+      }
+    },
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": true,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "isPoliticallyContent": false,
+      "locales": {
+        "en-US": {
+          "privacyPolicyUrl": "https://email-reader.vercel.app/privacy",
+          "termsOfUseUrl": "https://email-reader.vercel.app/terms"
+        }
+      }
+    },
+    "permissions": [
+      {
+        "name": "alexa::devices:all:notifications:write"
+      }
+    ],
+    "accountLinking": {
+      "type": "AUTH_CODE",
+      "authorizationUrl": "https://email-reader.vercel.app/api/alexa/oauth/authorize",
+      "accessTokenUrl": "https://email-reader.vercel.app/api/alexa/oauth/token",
+      "clientId": "email-reader-alexa",
+      "scopes": [
+        "profile"
+      ],
+      "skipOnEnablement": false,
+      "accessTokenScheme": "HTTP_BASIC",
+      "domains": [
+        "email-reader.vercel.app"
+      ]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:424865813892:function:3c97c0fb-2c2f-44d2-8e11-9022f04ecc1a:Release_0"
+        },
+        "interfaces": [],
+        "locales": {},
+        "regions": {
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:424865813892:function:3c97c0fb-2c2f-44d2-8e11-9022f04ecc1a:Release_0"
+            }
+          },
+          "EU": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:eu-west-1:424865813892:function:3c97c0fb-2c2f-44d2-8e11-9022f04ecc1a:Release_0"
+            }
+          },
+          "FE": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-west-2:424865813892:function:3c97c0fb-2c2f-44d2-8e11-9022f04ecc1a:Release_0"
+            }
+          }
+        }
+      }
+    }
+  }
+}
