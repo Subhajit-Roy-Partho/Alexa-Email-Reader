@@ -10,7 +10,13 @@ const RuntimeContextInterceptor = {
     async process(handlerInput) {
         const accessToken = handlerInput.requestEnvelope.context?.System?.user?.accessToken;
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes() || {};
-        const userId = await authService.resolveUserIdFromAccessToken(accessToken);
+        let userId = null;
+
+        try {
+            userId = await authService.resolveUserIdFromAccessToken(accessToken);
+        } catch (error) {
+            console.error('Failed to resolve user from access token', error);
+        }
 
         requestAttributes.userId = userId;
         handlerInput.attributesManager.setRequestAttributes(requestAttributes);
@@ -23,12 +29,16 @@ const RuntimeContextInterceptor = {
         const permissionScopes = context.user?.permissions?.scopes || {};
         const notificationPermission = permissionScopes['alexa::devices:all:notifications:write']?.status || 'UNKNOWN';
 
-        await accountService.captureRuntimeUserContext(userId, {
-            locale: handlerInput.requestEnvelope.request?.locale,
-            notificationPermission,
-            apiEndpoint: context.apiEndpoint,
-            apiAccessToken: context.apiAccessToken
-        });
+        try {
+            await accountService.captureRuntimeUserContext(userId, {
+                locale: handlerInput.requestEnvelope.request?.locale,
+                notificationPermission,
+                apiEndpoint: context.apiEndpoint,
+                apiAccessToken: context.apiAccessToken
+            });
+        } catch (error) {
+            console.error('Failed to capture runtime user context', error);
+        }
     }
 };
 
