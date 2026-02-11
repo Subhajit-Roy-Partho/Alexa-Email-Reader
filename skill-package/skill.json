@@ -38,7 +38,6 @@
       "isChildDirected": false,
       "isExportCompliant": true,
       "containsAds": false,
-      "isPoliticallyContent": false,
       "locales": {
         "en-US": {
           "privacyPolicyUrl": "https://alexamail.vercel.app/privacy",
@@ -51,20 +50,6 @@
         "name": "alexa::devices:all:notifications:write"
       }
     ],
-    "accountLinking": {
-      "type": "AUTH_CODE",
-      "authorizationUrl": "https://alexamail.vercel.app/api/alexa/oauth/authorize",
-      "accessTokenUrl": "https://alexamail.vercel.app/api/alexa/oauth/token",
-      "clientId": "email-reader-alexa",
-      "scopes": [
-        "profile"
-      ],
-      "skipOnEnablement": false,
-      "accessTokenScheme": "HTTP_BASIC",
-      "domains": [
-        "alexamail.vercel.app"
-      ]
-    },
     "apis": {
       "custom": {
         "endpoint": {
