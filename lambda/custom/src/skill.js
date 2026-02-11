@@ -16,6 +16,7 @@ const RuntimeContextInterceptor = {
             userId = await authService.resolveUserIdFromAccessToken(accessToken);
         } catch (error) {
             console.error('Failed to resolve user from access token', error);
+            requestAttributes.authDebug = error?.message || 'unknown-auth-error';
         }
 
         requestAttributes.userId = userId;

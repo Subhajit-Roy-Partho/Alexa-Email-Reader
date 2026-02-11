@@ -10,9 +10,17 @@ const LaunchRequestHandler = {
     async handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes() || {};
         const userId = requestAttributes.userId;
+        const authDebug = String(requestAttributes.authDebug || '').trim();
 
         if (!userId) {
-            const speakOutput = 'Welcome to Email Reader. Please link your account in the Alexa app to continue.';
+            const safeDebug = authDebug
+                .replace(/&/g, 'and')
+                .replace(/[<>]/g, '')
+                .replace(/\s+/g, ' ')
+                .slice(0, 160);
+            const speakOutput = safeDebug
+                ? `Welcome to Email Reader. Account validation failed. ${safeDebug}. Please link your account in the Alexa app to continue.`
+                : 'Welcome to Email Reader. Please link your account in the Alexa app to continue.';
             return handlerInput.responseBuilder
                 .speak(speakOutput)
                 .withLinkAccountCard()
