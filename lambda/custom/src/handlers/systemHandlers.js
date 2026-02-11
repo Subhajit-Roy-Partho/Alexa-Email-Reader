@@ -10,19 +10,18 @@ const LaunchRequestHandler = {
     async handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes() || {};
         const userId = requestAttributes.userId;
-        const authDebug = String(requestAttributes.authDebug || '').trim();
+        const hasAccessToken = requestAttributes.hasAccessToken === true;
 
         if (!userId) {
-            const safeDebug = authDebug
-                .replace(/&/g, 'and')
-                .replace(/[<>]/g, '')
-                .replace(/\s+/g, ' ')
-                .slice(0, 160);
-            const speakOutput = safeDebug
-                ? `Welcome to Email Reader. Account validation failed. ${safeDebug}. Please link your account in the Alexa app to continue.`
-                : 'Welcome to Email Reader. Please link your account in the Alexa app to continue.';
+            if (hasAccessToken) {
+                return handlerInput.responseBuilder
+                    .speak('Welcome to Email Reader. Your account appears linked, but I cannot access mailbox data right now. Please try again in a minute.')
+                    .reprompt('Try again in a minute.')
+                    .getResponse();
+            }
+
             return handlerInput.responseBuilder
-                .speak(speakOutput)
+                .speak('Welcome to Email Reader. Please link your account in the Alexa app to continue.')
                 .withLinkAccountCard()
                 .getResponse();
         }

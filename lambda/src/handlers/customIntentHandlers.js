@@ -12,7 +12,14 @@ function slotValue(handlerInput, slotName) {
 function withLinkedAccount(handlerInput, action) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes() || {};
     const userId = requestAttributes.userId;
+    const hasAccessToken = requestAttributes.hasAccessToken === true;
     if (!userId) {
+        if (hasAccessToken) {
+            return handlerInput.responseBuilder
+                .speak('Your account appears linked, but I cannot access mailbox data right now. Please try again shortly.')
+                .getResponse();
+        }
+
         const speakOutput = 'Please link your email account in the Alexa app to continue.';
         return handlerInput.responseBuilder
             .speak(speakOutput)

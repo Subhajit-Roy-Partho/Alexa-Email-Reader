@@ -10,6 +10,7 @@ const RuntimeContextInterceptor = {
     async process(handlerInput) {
         const accessToken = handlerInput.requestEnvelope.context?.System?.user?.accessToken;
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes() || {};
+        requestAttributes.hasAccessToken = Boolean(accessToken);
         let userId = null;
 
         try {
