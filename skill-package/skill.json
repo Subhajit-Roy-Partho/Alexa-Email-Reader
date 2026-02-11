@@ -41,8 +41,8 @@
       "isPoliticallyContent": false,
       "locales": {
         "en-US": {
-          "privacyPolicyUrl": "https://email-reader.vercel.app/privacy",
-          "termsOfUseUrl": "https://email-reader.vercel.app/terms"
+          "privacyPolicyUrl": "https://alexamail.vercel.app/privacy",
+          "termsOfUseUrl": "https://alexamail.vercel.app/terms"
         }
       }
     },
@@ -53,8 +53,8 @@
     ],
     "accountLinking": {
       "type": "AUTH_CODE",
-      "authorizationUrl": "https://email-reader.vercel.app/api/alexa/oauth/authorize",
-      "accessTokenUrl": "https://email-reader.vercel.app/api/alexa/oauth/token",
+      "authorizationUrl": "https://alexamail.vercel.app/api/alexa/oauth/authorize",
+      "accessTokenUrl": "https://alexamail.vercel.app/api/alexa/oauth/token",
       "clientId": "email-reader-alexa",
       "scopes": [
         "profile"
@@ -62,7 +62,7 @@
       "skipOnEnablement": false,
       "accessTokenScheme": "HTTP_BASIC",
       "domains": [
-        "email-reader.vercel.app"
+        "alexamail.vercel.app"
       ]
     },
     "apis": {
