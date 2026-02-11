@@ -11,7 +11,9 @@ test('runtime secret loader supports env precedence, cache, ttl expiry, and requ
     const originalEnv = {
         TEST_ENV_ONLY_SECRET: process.env.TEST_ENV_ONLY_SECRET,
         TEST_DDB_SECRET: process.env.TEST_DDB_SECRET,
-        ALEXA_SECRET_CACHE_SECONDS: process.env.ALEXA_SECRET_CACHE_SECONDS
+        ALEXA_SECRET_CACHE_SECONDS: process.env.ALEXA_SECRET_CACHE_SECONDS,
+        ALEXA_SECRET_ID_KEY: process.env.ALEXA_SECRET_ID_KEY,
+        ALEXA_SECRET_ID: process.env.ALEXA_SECRET_ID
     };
 
     let getCount = 0;
@@ -61,6 +63,32 @@ test('runtime secret loader supports env precedence, cache, ttl expiry, and requ
             runtimeSecrets.getSecretValue('MISSING_REQUIRED_SECRET', { required: true }),
             /Missing runtime secret: MISSING_REQUIRED_SECRET/
         );
+
+        runtimeSecrets.clearSecretCache();
+        documentClient.get = (params) => ({
+            promise: async () => {
+                if (Object.prototype.hasOwnProperty.call(params.Key, 'PK')) {
+                    const error = new Error('wrong key schema');
+                    error.code = 'ValidationException';
+                    throw error;
+                }
+                if (params.Key.id === 'SYSTEM#SECRETS#RUNTIME#PRIMARY') {
+                    return {
+                        Item: {
+                            secretValues: {
+                                TEST_DDB_SECRET: 'ddb-value-from-id'
+                            }
+                        }
+                    };
+                }
+                return { Item: null };
+            }
+        });
+
+        process.env.ALEXA_SECRET_ID_KEY = 'id';
+        process.env.ALEXA_SECRET_ID = 'SYSTEM#SECRETS#RUNTIME#PRIMARY';
+        const idSchemaValue = await runtimeSecrets.getSecretValue('TEST_DDB_SECRET', { required: true });
+        assert.equal(idSchemaValue, 'ddb-value-from-id');
     } finally {
         runtimeSecrets.clearSecretCache();
         documentClient.get = originalGet;
@@ -81,6 +109,18 @@ test('runtime secret loader supports env precedence, cache, ttl expiry, and requ
             delete process.env.ALEXA_SECRET_CACHE_SECONDS;
         } else {
             process.env.ALEXA_SECRET_CACHE_SECONDS = originalEnv.ALEXA_SECRET_CACHE_SECONDS;
+        }
+
+        if (originalEnv.ALEXA_SECRET_ID_KEY === undefined) {
+            delete process.env.ALEXA_SECRET_ID_KEY;
+        } else {
+            process.env.ALEXA_SECRET_ID_KEY = originalEnv.ALEXA_SECRET_ID_KEY;
+        }
+
+        if (originalEnv.ALEXA_SECRET_ID === undefined) {
+            delete process.env.ALEXA_SECRET_ID;
+        } else {
+            process.env.ALEXA_SECRET_ID = originalEnv.ALEXA_SECRET_ID;
         }
     }
 });

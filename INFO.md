@@ -390,6 +390,8 @@ Source: `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/handlers/sys
 | `ALEXA_SECRET_TABLE` | Falls back to `EMAIL_READER_TABLE`. |
 | `ALEXA_SECRET_PK` | Defaults to `SYSTEM#SECRETS`. |
 | `ALEXA_SECRET_SK` | Defaults to `RUNTIME#PRIMARY`. |
+| `ALEXA_SECRET_ID_KEY` | Defaults to `id` for id-only key schema tables. |
+| `ALEXA_SECRET_ID` | Defaults to `SYSTEM#SECRETS#RUNTIME#PRIMARY` for id-only key schema tables. |
 | `ALEXA_SECRET_CACHE_SECONDS` | Defaults to `300`. |
 | `DEFAULT_POLLING_MINUTES` | Defaults to `15`. |
 | `MAX_LINKED_ACCOUNTS` | Defaults to `3`. |
@@ -553,6 +555,8 @@ Validation:
    - `ALEXA_SECRET_TABLE` (if overridden)
    - `ALEXA_SECRET_PK`
    - `ALEXA_SECRET_SK`
+   - `ALEXA_SECRET_ID_KEY` (for id-only tables)
+   - `ALEXA_SECRET_ID` (for id-only tables)
 3. Confirm IAM role has `dynamodb:GetItem|PutItem|Query|Scan`.
 4. Validate table access with AWS CLI:
 

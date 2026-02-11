@@ -16,6 +16,8 @@
      - `APP_ENCRYPTION_KEY`
      - `GOOGLE_CLIENT_SECRET`
      - `MICROSOFT_CLIENT_SECRET`
+6. If your table key schema is `id` (no sort key), use:
+   - `/Users/subhajitrouy/Documents/Alexa/EmailReader/docs/dynamodb-secret-item-id-schema.json`
 
 ## 2. Lambda Environment Variables
 Set on skill and poller Lambdas as needed:
@@ -24,6 +26,8 @@ Set on skill and poller Lambdas as needed:
 - `ALEXA_SECRET_TABLE=EmailReader` (optional override)
 - `ALEXA_SECRET_PK=SYSTEM#SECRETS` (optional override)
 - `ALEXA_SECRET_SK=RUNTIME#PRIMARY` (optional override)
+- `ALEXA_SECRET_ID_KEY=id` (for id-only key schema tables)
+- `ALEXA_SECRET_ID=SYSTEM#SECRETS#RUNTIME#PRIMARY` (for id-only key schema tables)
 - `ALEXA_SECRET_CACHE_SECONDS=300`
 - `ALEXA_OAUTH_CLIENT_ID=email-reader-alexa`
 - `ALEXA_OAUTH_CLIENT_SECRET=<secret>`

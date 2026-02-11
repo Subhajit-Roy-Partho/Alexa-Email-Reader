@@ -319,6 +319,8 @@ Expected output/state:
 | `ALEXA_SECRET_TABLE` | No | `EMAIL_READER_TABLE` value | DynamoDB table used for runtime secret lookup. |
 | `ALEXA_SECRET_PK` | No | `SYSTEM#SECRETS` | Secret item partition key. |
 | `ALEXA_SECRET_SK` | No | `RUNTIME#PRIMARY` | Secret item sort key. |
+| `ALEXA_SECRET_ID_KEY` | No | `id` | Partition key attribute name for id-only DynamoDB tables. |
+| `ALEXA_SECRET_ID` | No | `SYSTEM#SECRETS#RUNTIME#PRIMARY` | Secret item id value for id-only DynamoDB tables. |
 | `ALEXA_SECRET_CACHE_SECONDS` | No | `300` | Runtime secret cache TTL in memory. |
 | `KMS_KEY_ID` | Recommended | none | Enables KMS envelope encryption for Lambda crypto service. |
 | `APP_ENCRYPTION_KEY` | Recommended if no KMS | hosted fallback key | AES-GCM fallback key (can also come from runtime secret map). |
@@ -413,6 +415,13 @@ aws dynamodb put-item \
     }}
   }'
 ```
+
+If your table uses an `id` partition key instead of `PK/SK`:
+1. Set Lambda env:
+   - `ALEXA_SECRET_ID_KEY=id`
+   - `ALEXA_SECRET_ID=SYSTEM#SECRETS#RUNTIME#PRIMARY`
+2. Create the item with `id` key format using:
+   - `/Users/subhajitrouy/Documents/Alexa/EmailReader/docs/dynamodb-secret-item-id-schema.json`
 
 ### 14.5 Turso Schema Initialization
 

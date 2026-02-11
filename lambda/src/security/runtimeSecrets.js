@@ -6,6 +6,7 @@ const { documentClient } = require('../store/dynamoClient');
 const DEFAULT_CACHE_SECONDS = 300;
 const DEFAULT_SECRET_PK = 'SYSTEM#SECRETS';
 const DEFAULT_SECRET_SK = 'RUNTIME#PRIMARY';
+const DEFAULT_SECRET_ID_KEY = 'id';
 
 let cachedSecrets = null;
 let cacheExpiresAt = 0;
@@ -40,6 +41,19 @@ function getSecretSk() {
     return process.env.ALEXA_SECRET_SK || config.secretSk || DEFAULT_SECRET_SK;
 }
 
+function getSecretIdKey() {
+    const keyName = process.env.ALEXA_SECRET_ID_KEY || config.secretIdKey || DEFAULT_SECRET_ID_KEY;
+    return String(keyName || '').trim() || DEFAULT_SECRET_ID_KEY;
+}
+
+function getSecretId() {
+    const explicit = process.env.ALEXA_SECRET_ID || config.secretId || '';
+    if (String(explicit || '').trim()) {
+        return String(explicit).trim();
+    }
+    return `${getSecretPk()}#${getSecretSk()}`;
+}
+
 function readEnvValue(key) {
     const raw = process.env[key];
     if (typeof raw !== 'string') {
@@ -64,15 +78,43 @@ function toSecretMap(value) {
 }
 
 async function loadSecretsFromDynamo() {
-    const response = await documentClient.get({
-        TableName: getSecretTableName(),
-        Key: {
+    const tableName = getSecretTableName();
+    const keyCandidates = [
+        {
             PK: getSecretPk(),
             SK: getSecretSk()
+        },
+        {
+            [getSecretIdKey()]: getSecretId()
         }
-    }).promise();
+    ];
 
-    return toSecretMap(response.Item?.secretValues);
+    let lastError = null;
+
+    for (const key of keyCandidates) {
+        try {
+            const response = await documentClient.get({
+                TableName: tableName,
+                Key: key
+            }).promise();
+
+            if (response.Item) {
+                return toSecretMap(response.Item.secretValues);
+            }
+        } catch (error) {
+            if (error?.code === 'ValidationException') {
+                lastError = error;
+                continue;
+            }
+            throw error;
+        }
+    }
+
+    if (lastError) {
+        throw lastError;
+    }
+
+    return {};
 }
 
 async function getCachedSecretMap() {

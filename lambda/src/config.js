@@ -12,6 +12,8 @@ module.exports = {
     secretTable: process.env.ALEXA_SECRET_TABLE || process.env.EMAIL_READER_TABLE || 'EmailReader',
     secretPk: process.env.ALEXA_SECRET_PK || 'SYSTEM#SECRETS',
     secretSk: process.env.ALEXA_SECRET_SK || 'RUNTIME#PRIMARY',
+    secretIdKey: process.env.ALEXA_SECRET_ID_KEY || 'id',
+    secretId: process.env.ALEXA_SECRET_ID || '',
     secretCacheSeconds: asInt(process.env.ALEXA_SECRET_CACHE_SECONDS, 300),
     kmsKeyId: process.env.KMS_KEY_ID,
     appEncryptionKey: process.env.APP_ENCRYPTION_KEY || HOSTED_FALLBACK_APP_ENCRYPTION_KEY,
