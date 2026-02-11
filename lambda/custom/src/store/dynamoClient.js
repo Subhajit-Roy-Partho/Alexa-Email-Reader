@@ -1,9 +1,10 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const config = require('../config');
 
 const documentClient = new AWS.DynamoDB.DocumentClient({
-    region: process.env.AWS_REGION || 'us-east-1',
+    region: config.dynamoRegion,
     convertEmptyValues: true
 });
 
