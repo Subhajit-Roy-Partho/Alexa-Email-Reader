@@ -1,5 +1,7 @@
 'use strict';
 
+const HOSTED_FALLBACK_APP_ENCRYPTION_KEY = 't0wxiRovu3j91bBkEEjAFq32+wr8RZa5BQ4VPhCGChU=';
+
 function asInt(value, fallback) {
     const parsed = Number.parseInt(value, 10);
     return Number.isInteger(parsed) ? parsed : fallback;
@@ -8,7 +10,7 @@ function asInt(value, fallback) {
 module.exports = {
     tableName: process.env.EMAIL_READER_TABLE || 'EmailReader',
     kmsKeyId: process.env.KMS_KEY_ID,
-    appEncryptionKey: process.env.APP_ENCRYPTION_KEY,
+    appEncryptionKey: process.env.APP_ENCRYPTION_KEY || HOSTED_FALLBACK_APP_ENCRYPTION_KEY,
     defaultLocale: process.env.DEFAULT_LOCALE || 'en-US',
     defaultPollingMinutes: asInt(process.env.DEFAULT_POLLING_MINUTES, 15),
     maxLinkedAccounts: asInt(process.env.MAX_LINKED_ACCOUNTS, 3),

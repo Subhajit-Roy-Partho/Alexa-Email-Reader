@@ -4,3 +4,4 @@ web/.next
 web/.vercel
 .ask/
 ask-resources.json
+.secrets
