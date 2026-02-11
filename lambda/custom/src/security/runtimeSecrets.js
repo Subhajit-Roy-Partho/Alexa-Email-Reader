@@ -1,6 +1,8 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const fs = require('fs');
+const path = require('path');
 const config = require('../config');
 const { documentClient } = require('../store/dynamoClient');
 
@@ -8,9 +10,12 @@ const DEFAULT_CACHE_SECONDS = 300;
 const DEFAULT_SECRET_PK = 'SYSTEM#SECRETS';
 const DEFAULT_SECRET_SK = 'RUNTIME#PRIMARY';
 const DEFAULT_SECRET_ID_KEY = 'id';
+const DEFAULT_SECRET_FILE = 'runtime-secrets.txt';
 
 let cachedSecrets = null;
 let cacheExpiresAt = 0;
+let cachedFileSecrets = null;
+let fileCacheExpiresAt = 0;
 let inflightLoad = null;
 
 function nowMs() {
@@ -121,6 +126,81 @@ function readEnvValue(key) {
     }
     const trimmed = raw.trim();
     return trimmed ? trimmed : null;
+}
+
+function getSecretFileCandidates() {
+    const configuredPath = String(process.env.ALEXA_SECRET_FILE || config.secretFile || '').trim();
+    const normalizedConfigured = configuredPath
+        ? (path.isAbsolute(configuredPath) ? configuredPath : path.resolve(process.cwd(), configuredPath))
+        : '';
+
+    return collectCandidates([
+        normalizedConfigured,
+        path.resolve(process.cwd(), DEFAULT_SECRET_FILE),
+        path.resolve(__dirname, '../../', DEFAULT_SECRET_FILE)
+    ]);
+}
+
+function parseSecretFileContent(rawText) {
+    if (typeof rawText !== 'string' || !rawText.trim()) {
+        return {};
+    }
+
+    const secretValues = {};
+
+    for (const line of rawText.split(/\r?\n/)) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine || trimmedLine.startsWith('#')) {
+            continue;
+        }
+
+        const normalizedLine = trimmedLine.startsWith('export ')
+            ? trimmedLine.slice(7).trim()
+            : trimmedLine;
+        const separatorIndex = normalizedLine.indexOf('=');
+        if (separatorIndex <= 0) {
+            continue;
+        }
+
+        const key = normalizedLine.slice(0, separatorIndex).trim();
+        let value = normalizedLine.slice(separatorIndex + 1).trim();
+        if (!key) {
+            continue;
+        }
+
+        if (
+            (value.startsWith('"') && value.endsWith('"'))
+            || (value.startsWith('\'') && value.endsWith('\''))
+        ) {
+            value = value.slice(1, -1);
+        }
+
+        secretValues[key] = value;
+    }
+
+    return secretValues;
+}
+
+function loadSecretsFromFile() {
+    for (const candidatePath of getSecretFileCandidates()) {
+        try {
+            if (!fs.existsSync(candidatePath)) {
+                continue;
+            }
+            const raw = fs.readFileSync(candidatePath, 'utf8');
+            const parsed = parseSecretFileContent(raw);
+            if (Object.keys(parsed).length > 0) {
+                return parsed;
+            }
+        } catch (error) {
+            if (error?.code === 'ENOENT') {
+                continue;
+            }
+            throw error;
+        }
+    }
+
+    return {};
 }
 
 function toSecretMap(value) {
@@ -235,12 +315,30 @@ async function getCachedSecretMap() {
     return inflightLoad;
 }
 
+function getCachedFileSecretMap() {
+    if (cachedFileSecrets && nowMs() < fileCacheExpiresAt) {
+        return cachedFileSecrets;
+    }
+
+    const loaded = loadSecretsFromFile();
+    const ttlSeconds = getCacheSeconds();
+    cachedFileSecrets = loaded;
+    fileCacheExpiresAt = nowMs() + ttlSeconds * 1000;
+    return loaded;
+}
+
 async function getSecretValue(key, options = {}) {
     const required = options.required === true;
 
     const envValue = readEnvValue(key);
     if (envValue !== null) {
         return envValue;
+    }
+
+    const fileSecretMap = getCachedFileSecretMap();
+    const fileSecretValue = typeof fileSecretMap[key] === 'string' ? fileSecretMap[key].trim() : '';
+    if (fileSecretValue) {
+        return fileSecretValue;
     }
 
     const secretMap = await getCachedSecretMap();
@@ -259,6 +357,8 @@ async function getSecretValue(key, options = {}) {
 function clearSecretCache() {
     cachedSecrets = null;
     cacheExpiresAt = 0;
+    cachedFileSecrets = null;
+    fileCacheExpiresAt = 0;
     inflightLoad = null;
 }
 
