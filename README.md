@@ -84,7 +84,7 @@ A user needs:
 
 1. Open Alexa app, enable skill.
 2. Tap `Link Account`.
-3. Complete sign-in in web app.
+3. Complete web sign-in using email + password (minimum 8 characters).
 4. Connect at least one mailbox.
 5. Return to Alexa and test commands.
 
@@ -156,7 +156,11 @@ User actions:
 4. Set default account:
    - click `Set as default` on chosen account
    - expect redirect to `/dashboard?saved=default`
-5. Set polling interval:
+5. Delete account (soft delete):
+   - click `Delete account` on chosen account
+   - expect redirect to `/dashboard?saved=delete`
+   - account status is set to `DISCONNECTED`
+6. Set polling interval:
    - choose 15, 30, or 60
    - submit
    - expect redirect to `/dashboard?saved=polling`
@@ -165,6 +169,7 @@ Expected state after dashboard actions:
 1. Accounts appear in connected accounts list.
 2. Preferences persist across refresh.
 3. No `?error=` query parameter in URL.
+4. Deleted accounts no longer appear in active account list.
 
 ## 9. Voice Commands Guide
 
@@ -438,10 +443,10 @@ Run this checklist in order.
 
 1. Web health:
    - Open `/signin` and `/dashboard`.
-   - Expected state: sign-in and dashboard render.
+   - Expected state: unauthenticated `/dashboard` redirects to `/signin`.
 2. Alexa linking:
    - Start account linking from Alexa app.
-   - Expected state: redirected to web authorize/sign-in flow.
+   - Expected state: redirected to web authorize/sign-in flow (email + password).
 3. Mail connection:
    - Connect Gmail, Outlook, or manual account.
    - Expected state: account appears in dashboard.

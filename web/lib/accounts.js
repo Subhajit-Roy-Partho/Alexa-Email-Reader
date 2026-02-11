@@ -93,9 +93,37 @@ async function setPollingInterval(userId, pollingMinutes) {
   });
 }
 
+async function deleteAccount(userId, accountId) {
+  const targetId = String(accountId || '').trim();
+  if (!targetId) {
+    throw new Error('Account id is required');
+  }
+
+  const accounts = await store.listAccounts(userId);
+  const target = accounts.find((account) => account.accountId === targetId && account.status !== 'DISCONNECTED');
+  if (!target) {
+    throw new Error('Unknown account');
+  }
+
+  await store.upsertAccount(userId, {
+    accountId: targetId,
+    status: 'DISCONNECTED',
+    disconnectedAt: new Date().toISOString()
+  });
+
+  const prefs = await store.getPrefs(userId);
+  if (prefs?.activeAccountId === targetId) {
+    const remaining = accounts.filter((account) => account.accountId !== targetId && account.status !== 'DISCONNECTED');
+    await store.upsertPrefs(userId, {
+      activeAccountId: remaining[0]?.accountId || null
+    });
+  }
+}
+
 module.exports = {
   addManualAccount,
   addOAuthAccount,
   setDefaultAccount,
-  setPollingInterval
+  setPollingInterval,
+  deleteAccount
 };
