@@ -93,7 +93,7 @@ Expected state after first-time setup:
 2. Dashboard shows at least one linked account.
 3. Voice command returns unread count.
 
-## 7. Account Linking End-to-End Flow
+## 7. Account Linking and Data Flow
 
 High-level system map:
 
@@ -101,14 +101,16 @@ High-level system map:
 flowchart LR
     U["User (Alexa App + Echo)"] --> A["Alexa Skill Service"]
     A --> L["AWS Lambda Skill\n/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/index.js"]
-    L --> D["DynamoDB Table\nEmailReader"]
+    L --> D["DynamoDB Table\nAlexa Internal State"]
+    L --> T["Turso (libSQL)\nShared Accounts/Tokens/Prefs"]
     L --> M1["Gmail API"]
     L --> M2["Microsoft Graph API"]
     L --> M3["IMAP/POP Servers"]
     U --> W["Next.js Web App\n/Users/subhajitrouy/Documents/Alexa/EmailReader/web"]
-    W --> D
+    W --> T
     P["EventBridge (15 min)"] --> J["Poller Lambda\n/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/jobs/poller.js"]
     J --> D
+    J --> T
     J --> A
 ```
 
@@ -119,7 +121,7 @@ sequenceDiagram
     participant User as "User"
     participant Alexa as "Alexa Account Linking"
     participant Web as "Web OAuth Endpoints"
-    participant Store as "DynamoDB Token Store"
+    participant Store as "Turso Token Store"
 
     User->>Alexa: "Enable skill and choose Link Account"
     Alexa->>Web: "GET /api/alexa/oauth/authorize"
@@ -214,16 +216,19 @@ Cost guidance:
 
 ## 12. Data Handling and Privacy Summary
 
-Stored in DynamoDB:
+Stored in Turso (`entities` table):
+1. Linked accounts and encrypted credential blobs.
+2. Polling preferences and next due timestamp.
+3. OAuth token records (`AUTH_CODE`, `ACCESS`, `REFRESH`) hashed by token digest.
+
+Stored in DynamoDB (Alexa internal only):
 1. User profile and runtime context.
-2. Linked accounts and encrypted credential blobs.
-3. Mailbox cache with up to 10 recent messages per account (including full body text).
-4. Polling preferences and next due timestamp.
-5. OAuth token records (`AUTH_CODE`, `ACCESS`, `REFRESH`) hashed by token digest.
+2. Mailbox cache with up to 10 recent messages per account (including full body text).
+3. Runtime secrets item (`PK=SYSTEM#SECRETS`, `SK=RUNTIME#PRIMARY`) unless overridden by env vars.
 
 Security implementation details:
-1. Preferred: KMS envelope encryption when `KMS_KEY_ID` is set.
-2. Fallback: AES-GCM if `APP_ENCRYPTION_KEY` is set.
+1. Lambda path: preferred KMS envelope encryption when `KMS_KEY_ID` is set.
+2. Lambda + Web fallback: AES-GCM when `APP_ENCRYPTION_KEY` is set.
 3. Last fallback: base64 plaintext blob mode if no encryption config is present.
 
 Operational requirement:
@@ -243,10 +248,12 @@ aws cloudformation deploy \
   --capabilities CAPABILITY_NAMED_IAM
 ```
 2. Confirm DynamoDB table exists.
+3. Add the Alexa runtime secret item to DynamoDB (manual steps in section 14.4).
 
 Expected output/state:
 1. CloudFormation completes successfully.
 2. Table `EmailReader` exists (or your overridden table name).
+3. Secret map item exists and contains Turso + provider secrets.
 
 ### 13.2 Build/test Lambda locally
 
@@ -276,11 +283,13 @@ npm test
 npm run build
 ```
 2. Deploy `web/` to Vercel with required env vars.
+3. Do not set `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` on Vercel.
 
 Expected output/state:
 1. Vercel deployment is healthy.
 2. `https://<VERCEL_DOMAIN>/signin` opens.
 3. OAuth endpoints respond.
+4. Web writes only to Turso (no direct AWS SDK dependency in web runtime).
 
 ### 13.4 Configure Alexa skill package
 
@@ -305,10 +314,14 @@ Expected output/state:
 
 | Variable | Required | Default | Purpose |
 |---|---|---|---|
-| `EMAIL_READER_TABLE` | Yes | `EmailReader` | DynamoDB table name. |
+| `EMAIL_READER_TABLE` | Yes | `EmailReader` | DynamoDB table for Alexa-internal state. |
 | `AWS_REGION` | Yes | `us-east-1` | AWS SDK region. |
-| `KMS_KEY_ID` | Recommended | none | Enables KMS envelope encryption. |
-| `APP_ENCRYPTION_KEY` | Recommended if no KMS | none | 32-byte base64 key for AES-GCM fallback. |
+| `ALEXA_SECRET_TABLE` | No | `EMAIL_READER_TABLE` value | DynamoDB table used for runtime secret lookup. |
+| `ALEXA_SECRET_PK` | No | `SYSTEM#SECRETS` | Secret item partition key. |
+| `ALEXA_SECRET_SK` | No | `RUNTIME#PRIMARY` | Secret item sort key. |
+| `ALEXA_SECRET_CACHE_SECONDS` | No | `300` | Runtime secret cache TTL in memory. |
+| `KMS_KEY_ID` | Recommended | none | Enables KMS envelope encryption for Lambda crypto service. |
+| `APP_ENCRYPTION_KEY` | Recommended if no KMS | hosted fallback key | AES-GCM fallback key (can also come from runtime secret map). |
 | `DEFAULT_LOCALE` | No | `en-US` | Notification locale fallback. |
 | `DEFAULT_POLLING_MINUTES` | No | `15` | Default user polling interval. |
 | `MAX_LINKED_ACCOUNTS` | No | `3` | Account limit. |
@@ -317,9 +330,11 @@ Expected output/state:
 | `ALEXA_OAUTH_CLIENT_ID` | Yes | none | Access token client binding. |
 | `ALEXA_OAUTH_CLIENT_SECRET` | Yes | none | OAuth client secret. |
 | `GOOGLE_CLIENT_ID` | Required for Gmail OAuth | none | Google OAuth client id. |
-| `GOOGLE_CLIENT_SECRET` | Required for Gmail OAuth | none | Google OAuth secret. |
+| `GOOGLE_CLIENT_SECRET` | No (if in secret map) | none | Google OAuth secret for refresh flow. |
 | `MICROSOFT_CLIENT_ID` | Required for Outlook OAuth | none | Microsoft OAuth client id. |
-| `MICROSOFT_CLIENT_SECRET` | Required for Outlook OAuth | none | Microsoft OAuth secret. |
+| `MICROSOFT_CLIENT_SECRET` | No (if in secret map) | none | Microsoft OAuth secret for refresh flow. |
+| `TURSO_DATABASE_URL` | No (if in secret map) | none | Turso shared storage URL. |
+| `TURSO_AUTH_TOKEN` | No (if in secret map) | none | Turso shared storage auth token. |
 | `NOTIFICATIONS_ENABLED` | No | `true` | Toggle notification sending. |
 
 ### 14.2 Web (`/web/lib/config.js`)
@@ -327,30 +342,86 @@ Expected output/state:
 | Variable | Required | Default | Purpose |
 |---|---|---|---|
 | `APP_BASE_URL` | Yes | `http://localhost:3000` | Callback URL base. |
-| `EMAIL_READER_TABLE` | Yes | `EmailReader` | Shared DynamoDB table. |
-| `AWS_REGION` | Yes | `us-east-1` | AWS SDK region. |
 | `SESSION_SECRET` | Yes | weak placeholder | HMAC signing for session token. |
 | `CSRF_SECRET` | Yes | weak placeholder | HMAC signing for CSRF cookie. |
 | `ALEXA_OAUTH_CLIENT_ID` | Yes | `email-reader-alexa` | Alexa account-linking client id. |
 | `ALEXA_OAUTH_CLIENT_SECRET` | Yes | weak placeholder | Alexa account-linking secret. |
-| `KMS_KEY_ID` | Recommended | none | KMS encryption support. |
-| `APP_ENCRYPTION_KEY` | Recommended if no KMS | none | AES-GCM fallback key. |
+| `APP_ENCRYPTION_KEY` | Recommended | none | AES-GCM key used by web for account credential blob encryption. |
+| `TURSO_DATABASE_URL` | Yes | none | Turso libSQL URL for all web persistence. |
+| `TURSO_AUTH_TOKEN` | Yes | none | Turso auth token for web persistence. |
 | `GOOGLE_CLIENT_ID` | For Gmail OAuth | none | Google auth. |
 | `GOOGLE_CLIENT_SECRET` | For Gmail OAuth | none | Google auth. |
 | `MICROSOFT_CLIENT_ID` | For Outlook OAuth | none | Microsoft auth. |
 | `MICROSOFT_CLIENT_SECRET` | For Outlook OAuth | none | Microsoft auth. |
+
+Important:
+1. Vercel does not need `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` for this architecture.
+2. Web runtime has no DynamoDB dependency and persists only to Turso.
 
 ### 14.3 Example safe placeholders
 
 ```bash
 ALEXA_OAUTH_CLIENT_ID=email-reader-alexa
 ALEXA_OAUTH_CLIENT_SECRET=<ALEXA_CLIENT_SECRET>
+TURSO_DATABASE_URL=libsql://<db-name>-<org>.turso.io
+TURSO_AUTH_TOKEN=<TURSO_AUTH_TOKEN>
 GOOGLE_CLIENT_ID=<GOOGLE_CLIENT_ID>
 GOOGLE_CLIENT_SECRET=<GOOGLE_CLIENT_SECRET>
 MICROSOFT_CLIENT_ID=<MICROSOFT_CLIENT_ID>
 MICROSOFT_CLIENT_SECRET=<MICROSOFT_CLIENT_SECRET>
 APP_BASE_URL=https://<VERCEL_DOMAIN>
 ```
+
+### 14.4 Manual DynamoDB Runtime Secret Item (Alexa Internal)
+
+Secret item contract:
+1. Table: `ALEXA_SECRET_TABLE` (default `EMAIL_READER_TABLE`).
+2. Keys:
+   - `PK = ALEXA_SECRET_PK` (default `SYSTEM#SECRETS`)
+   - `SK = ALEXA_SECRET_SK` (default `RUNTIME#PRIMARY`)
+3. Required map attribute: `secretValues` (string-to-string).
+4. Required keys inside `secretValues`:
+   - `TURSO_DATABASE_URL`
+   - `TURSO_AUTH_TOKEN`
+   - `APP_ENCRYPTION_KEY`
+   - `GOOGLE_CLIENT_SECRET`
+   - `MICROSOFT_CLIENT_SECRET`
+
+AWS Console steps:
+1. Open DynamoDB table (`EMAIL_READER_TABLE` unless overridden).
+2. Choose `Explore table items` and click `Create item`.
+3. Set `PK` and `SK` to the values above.
+4. Add a `Map` attribute named `secretValues`.
+5. Add each runtime secret key/value inside the map.
+6. Save item.
+
+AWS CLI example:
+```bash
+aws dynamodb put-item \
+  --table-name "<EMAIL_READER_TABLE>" \
+  --region "<AWS_REGION>" \
+  --item '{
+    "PK": {"S": "SYSTEM#SECRETS"},
+    "SK": {"S": "RUNTIME#PRIMARY"},
+    "entityType": {"S": "SYSTEM_SECRET_MAP"},
+    "secretValues": {"M": {
+      "TURSO_DATABASE_URL": {"S": "libsql://<db-name>-<org>.turso.io"},
+      "TURSO_AUTH_TOKEN": {"S": "<TURSO_AUTH_TOKEN>"},
+      "APP_ENCRYPTION_KEY": {"S": "<32-byte-base64-key>"},
+      "GOOGLE_CLIENT_SECRET": {"S": "<GOOGLE_CLIENT_SECRET>"},
+      "MICROSOFT_CLIENT_SECRET": {"S": "<MICROSOFT_CLIENT_SECRET>"}
+    }}
+  }'
+```
+
+### 14.5 Turso Schema Initialization
+
+Automatic behavior:
+1. Web and Lambda both call schema bootstrap on first Turso access.
+2. Required table/indexes are created if missing:
+   - `entities(pk, sk, entity_type, user_id, next_due_at, data, created_at, updated_at)`
+   - index on `(pk, sk)` for user-prefix reads
+   - index on `(entity_type, next_due_at)` for due-user scan
 
 ## 15. Verification Checklist (Post-Deploy Smoke Tests)
 

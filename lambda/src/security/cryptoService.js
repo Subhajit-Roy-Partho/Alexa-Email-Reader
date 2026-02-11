@@ -3,14 +3,34 @@
 const crypto = require('crypto');
 const AWS = require('aws-sdk');
 const config = require('../config');
+const { getSecretValue } = require('./runtimeSecrets');
 
 const kms = new AWS.KMS({ region: process.env.AWS_REGION || 'us-east-1' });
 
-function getFallbackKey() {
-    if (!config.appEncryptionKey) {
+async function resolveAppEncryptionKey() {
+    const fromEnv = typeof process.env.APP_ENCRYPTION_KEY === 'string' ? process.env.APP_ENCRYPTION_KEY.trim() : '';
+    if (fromEnv) {
+        return fromEnv;
+    }
+
+    const fromSecrets = await getSecretValue('APP_ENCRYPTION_KEY');
+    if (fromSecrets) {
+        return fromSecrets;
+    }
+
+    if (typeof config.appEncryptionKey === 'string' && config.appEncryptionKey.trim()) {
+        return config.appEncryptionKey.trim();
+    }
+
+    return null;
+}
+
+async function getFallbackKey() {
+    const appEncryptionKey = await resolveAppEncryptionKey();
+    if (!appEncryptionKey) {
         return null;
     }
-    const key = Buffer.from(config.appEncryptionKey, 'base64');
+    const key = Buffer.from(appEncryptionKey, 'base64');
     return key.length === 32 ? key : null;
 }
 
@@ -37,7 +57,7 @@ async function encryptJson(payload) {
         };
     }
 
-    const fallbackKey = getFallbackKey();
+    const fallbackKey = await getFallbackKey();
     if (!fallbackKey) {
         return {
             mode: 'plaintext-base64',
@@ -83,7 +103,7 @@ async function decryptJson(blob) {
     }
 
     if (blob.mode === 'aes-gcm') {
-        const fallbackKey = getFallbackKey();
+        const fallbackKey = await getFallbackKey();
         if (!fallbackKey) {
             throw new Error('APP_ENCRYPTION_KEY is required to decrypt aes-gcm payloads');
         }

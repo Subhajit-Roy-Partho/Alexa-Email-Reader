@@ -28,7 +28,8 @@ Primary goals:
 3. Web app:
    - `/Users/subhajitrouy/Documents/Alexa/EmailReader/web`
 4. Storage:
-   - Single DynamoDB table (default `EmailReader`)
+   - Turso (`entities`) for shared accounts/tokens/prefs
+   - DynamoDB for Alexa-internal profile/mailbox/runtime-secrets
 5. External providers:
    - Gmail API
    - Microsoft Graph
@@ -46,16 +47,18 @@ sequenceDiagram
     participant Alexa as "Alexa Service"
     participant Skill as "Lambda Skill (/lambda/src/skill.js)"
     participant Auth as "authService"
-    participant Data as "DynamoDB"
+    participant Shared as "Turso"
+    participant Internal as "DynamoDB"
     participant Mail as "mailService + connectors"
 
     User->>Alexa: "Intent utterance"
     Alexa->>Skill: "Request envelope"
     Skill->>Auth: "Resolve userId from access token"
-    Auth->>Data: "Lookup TOKEN#<hash> / ACCESS"
-    Skill->>Data: "Capture runtime context (profile)"
+    Auth->>Shared: "Lookup TOKEN#<hash> / ACCESS"
+    Skill->>Internal: "Capture runtime context (profile)"
     Skill->>Mail: "Resolve account + unread/latest/body"
-    Mail->>Data: "Read mailbox state"
+    Mail->>Shared: "Resolve accounts + prefs"
+    Mail->>Internal: "Read mailbox state"
     Mail->>Mail: "Sync if stale via connector"
     Mail-->>Skill: "Normalized response"
     Skill-->>Alexa: "Speech response"
@@ -108,9 +111,9 @@ sequenceDiagram
 
 | File | Responsibility | Key behavior |
 |---|---|---|
-| `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/store/repository.js` | DynamoDB read/write API | Upserts profile/account/prefs/mailbox, due-user scan. |
+| `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/store/repository.js` | Hybrid storage API | DynamoDB for profile/mailbox, Turso for accounts/prefs/tokens/due-user scan. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/store/keyBuilder.js` | Key conventions | `USER#...`, `ACCOUNT#...`, `MAILBOX#...`, `TOKEN#...`. |
-| `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/security/cryptoService.js` | Encryption/decryption | KMS envelope preferred; AES-GCM fallback; plaintext-base64 fallback. |
+| `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/security/cryptoService.js` | Encryption/decryption | KMS envelope preferred; AES-GCM fallback via env or runtime secret map; plaintext-base64 fallback. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/utils/*` | Parsing/text/hash helpers | Message parsing, clipping/HTML strip, SHA-256 token hashing. |
 
 #### Web API layer
@@ -127,13 +130,13 @@ sequenceDiagram
 | File | Responsibility | Key behavior |
 |---|---|---|
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/config.js` | Runtime config | Environment resolution and defaults. |
-| `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/security.js` | Signing/hash/encryption | HMAC for state/session, token hash, KMS/AES encryption. |
+| `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/security.js` | Signing/hash/encryption | HMAC for state/session, token hash, AES-GCM/plaintext fallback encryption. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/session.js` | Session cookie logic | Signed 30-day session token (`email_reader_session`). |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/csrf.js` | CSRF protections | Issued token cookie + request validation. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/tokenStore.js` | OAuth token lifecycle | Create/consume auth codes, issue/refresh/revoke tokens. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/accounts.js` | Linked account operations | Max account guard, encrypted credential persistence. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/providerOAuth.js` | Provider exchange logic | OAuth URL creation and token/profile exchange. |
-| `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/store.js` | Web-side DynamoDB wrapper | Profile/account/prefs/token CRUD. |
+| `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/store.js` | Web-side Turso wrapper | Profile/account/prefs/token CRUD in `entities` table. |
 | `/Users/subhajitrouy/Documents/Alexa/EmailReader/web/lib/oauthState.js` | OAuth state signing | 10-minute signed state payload for provider callbacks. |
 
 ## 4. Lambda Request Lifecycle
@@ -194,7 +197,7 @@ Detailed sequence:
    - `notificationsSent`
    - `errors[]`
 
-## 6. Data Model and DynamoDB Key Strategy
+## 6. Data Model and Hybrid Storage Strategy
 
 Key scheme in `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/store/keyBuilder.js`:
 1. `PK = USER#<userId>` for user-scoped entities.
@@ -203,6 +206,16 @@ Key scheme in `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/store/
 4. `SK = ACCOUNT#<accountId>` for linked accounts.
 5. `SK = MAILBOX#<accountId>` for cached mailbox state.
 6. `PK = TOKEN#<sha256(token)>`, `SK = ACCESS|REFRESH|AUTH_CODE` for OAuth records.
+
+Storage placement:
+1. Turso `entities` table:
+   - `USER_PREFS`
+   - `LINKED_ACCOUNT`
+   - `OAUTH_TOKEN`
+2. DynamoDB:
+   - `USER_PROFILE`
+   - `MAILBOX_STATE`
+   - runtime secret map item (`SYSTEM#SECRETS` / `RUNTIME#PRIMARY` by default)
 
 Entity overview:
 
@@ -230,7 +243,7 @@ OAuth/token lifecycle:
 sequenceDiagram
     participant Web as "Web OAuth API"
     participant TS as "tokenStore"
-    participant DB as "DynamoDB"
+    participant DB as "Turso"
     participant Alexa as "Alexa"
     participant Skill as "Lambda authService"
 
@@ -374,14 +387,18 @@ Source: `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/handlers/sys
 | Variable | Effect if missing |
 |---|---|
 | `EMAIL_READER_TABLE` | Defaults to `EmailReader`. |
+| `ALEXA_SECRET_TABLE` | Falls back to `EMAIL_READER_TABLE`. |
+| `ALEXA_SECRET_PK` | Defaults to `SYSTEM#SECRETS`. |
+| `ALEXA_SECRET_SK` | Defaults to `RUNTIME#PRIMARY`. |
+| `ALEXA_SECRET_CACHE_SECONDS` | Defaults to `300`. |
 | `DEFAULT_POLLING_MINUTES` | Defaults to `15`. |
 | `MAX_LINKED_ACCOUNTS` | Defaults to `3`. |
 | `MAX_CACHED_MESSAGES` | Defaults to `10`. |
 | `STALE_SYNC_MINUTES` | Defaults to `5`. |
 | `KMS_KEY_ID` | KMS encryption path disabled. |
-| `APP_ENCRYPTION_KEY` | AES-GCM fallback unavailable. |
+| `APP_ENCRYPTION_KEY` | AES-GCM fallback can still come from DynamoDB secret map. |
 | `NOTIFICATIONS_ENABLED` | Treated as enabled unless set to `'false'`. |
-| OAuth provider client keys | Refresh flows fail if missing for corresponding provider. |
+| OAuth provider client keys | Refresh flows fail if missing in both env and secret map. |
 
 ### 11.2 Web config semantics (`/web/lib/config.js`)
 
@@ -390,6 +407,8 @@ Source: `/Users/subhajitrouy/Documents/Alexa/EmailReader/lambda/src/handlers/sys
 | `SESSION_SECRET` | Uses weak placeholder; must override in production. |
 | `CSRF_SECRET` | Uses weak placeholder; must override in production. |
 | `ALEXA_OAUTH_CLIENT_SECRET` | Uses weak placeholder; token endpoint still validates against it. |
+| `TURSO_DATABASE_URL` | Web data routes fail because Turso connection cannot initialize. |
+| `TURSO_AUTH_TOKEN` | Remote Turso auth fails for non-local databases. |
 | Provider OAuth vars | Connect routes fail with explicit errors. |
 | `APP_BASE_URL` | Defaults to `http://localhost:3000`; breaks remote OAuth if not overridden. |
 
@@ -519,7 +538,7 @@ Decision tree:
 ### 13.3 Incident: DynamoDB read/write failures
 
 Symptom:
-1. Skill errors, session handling fails, or poller cannot persist state.
+1. Skill errors, poller cannot persist mailbox/profile state, or runtime secret lookup fails.
 
 Likely causes:
 1. IAM policy regression.
@@ -527,10 +546,13 @@ Likely causes:
 3. Regional mismatch.
 
 Validation:
-1. Check Lambda/web logs for AWS SDK errors.
+1. Check Lambda logs for AWS SDK errors.
 2. Confirm env vars:
    - `EMAIL_READER_TABLE`
    - `AWS_REGION`
+   - `ALEXA_SECRET_TABLE` (if overridden)
+   - `ALEXA_SECRET_PK`
+   - `ALEXA_SECRET_SK`
 3. Confirm IAM role has `dynamodb:GetItem|PutItem|Query|Scan`.
 4. Validate table access with AWS CLI:
 

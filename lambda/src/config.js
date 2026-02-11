@@ -9,6 +9,10 @@ function asInt(value, fallback) {
 
 module.exports = {
     tableName: process.env.EMAIL_READER_TABLE || 'EmailReader',
+    secretTable: process.env.ALEXA_SECRET_TABLE || process.env.EMAIL_READER_TABLE || 'EmailReader',
+    secretPk: process.env.ALEXA_SECRET_PK || 'SYSTEM#SECRETS',
+    secretSk: process.env.ALEXA_SECRET_SK || 'RUNTIME#PRIMARY',
+    secretCacheSeconds: asInt(process.env.ALEXA_SECRET_CACHE_SECONDS, 300),
     kmsKeyId: process.env.KMS_KEY_ID,
     appEncryptionKey: process.env.APP_ENCRYPTION_KEY || HOSTED_FALLBACK_APP_ENCRYPTION_KEY,
     defaultLocale: process.env.DEFAULT_LOCALE || 'en-US',

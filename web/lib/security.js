@@ -1,8 +1,5 @@
 const crypto = require('crypto');
-const AWS = require('aws-sdk');
 const config = require('./config');
-
-const kms = new AWS.KMS({ region: config.awsRegion });
 
 function base64url(input) {
   return Buffer.from(input).toString('base64url');
@@ -56,26 +53,6 @@ function getFallbackKey() {
 
 async function encryptJson(payload) {
   const plaintext = Buffer.from(JSON.stringify(payload), 'utf8');
-
-  if (config.kmsKeyId) {
-    const dataKey = await kms.generateDataKey({
-      KeyId: config.kmsKeyId,
-      KeySpec: 'AES_256'
-    }).promise();
-
-    const iv = crypto.randomBytes(12);
-    const cipher = crypto.createCipheriv('aes-256-gcm', dataKey.Plaintext, iv);
-    const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
-
-    return {
-      mode: 'kms-envelope',
-      encryptedDataKey: dataKey.CiphertextBlob.toString('base64'),
-      iv: iv.toString('base64'),
-      tag: cipher.getAuthTag().toString('base64'),
-      ciphertext: ciphertext.toString('base64')
-    };
-  }
-
   const fallbackKey = getFallbackKey();
   if (!fallbackKey) {
     return {

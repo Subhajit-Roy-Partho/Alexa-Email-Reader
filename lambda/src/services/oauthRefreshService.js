@@ -3,6 +3,7 @@
 const config = require('../config');
 const repository = require('../store/repository');
 const { encryptJson } = require('../security/cryptoService');
+const { getSecretValue } = require('../security/runtimeSecrets');
 
 function isExpiringSoon(expiresAt) {
     if (!expiresAt) {
@@ -12,20 +13,22 @@ function isExpiringSoon(expiresAt) {
     return Number.isNaN(expires) || expires < Date.now() + 60_000;
 }
 
-function getRefreshConfig(provider) {
+async function getRefreshConfig(provider) {
     if (provider === 'gmail') {
+        const clientSecret = config.googleClientSecret || await getSecretValue('GOOGLE_CLIENT_SECRET');
         return {
             tokenUrl: 'https://oauth2.googleapis.com/token',
             clientId: config.googleClientId,
-            clientSecret: config.googleClientSecret
+            clientSecret
         };
     }
 
     if (provider === 'outlook') {
+        const clientSecret = config.microsoftClientSecret || await getSecretValue('MICROSOFT_CLIENT_SECRET');
         return {
             tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
             clientId: config.microsoftClientId,
-            clientSecret: config.microsoftClientSecret
+            clientSecret
         };
     }
 
@@ -34,7 +37,7 @@ function getRefreshConfig(provider) {
 
 async function refreshToken(userId, account) {
     const provider = String(account.provider || '').toLowerCase();
-    const providerConfig = getRefreshConfig(provider);
+    const providerConfig = await getRefreshConfig(provider);
     if (!providerConfig || !providerConfig.clientId || !providerConfig.clientSecret) {
         throw new Error(`Missing OAuth refresh configuration for provider ${provider}`);
     }

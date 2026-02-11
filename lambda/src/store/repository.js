@@ -3,13 +3,21 @@
 const { v4: uuidv4 } = require('uuid');
 const config = require('../config');
 const { documentClient } = require('./dynamoClient');
+const turso = require('./tursoClient');
 const keys = require('./keyBuilder');
 
 function nowIso() {
     return new Date().toISOString();
 }
 
-async function getItem(pk, sk) {
+function parseEntityRow(row) {
+    if (!row || typeof row.data !== 'string') {
+        return null;
+    }
+    return JSON.parse(row.data);
+}
+
+async function getDynamoItem(pk, sk) {
     const response = await documentClient.get({
         TableName: config.tableName,
         Key: { PK: pk, SK: sk }
@@ -17,31 +25,79 @@ async function getItem(pk, sk) {
     return response.Item || null;
 }
 
-async function putItem(item) {
+async function putDynamoItem(item) {
     await documentClient.put({
         TableName: config.tableName,
         Item: item
     }).promise();
 }
 
-async function queryByUser(userId, skPrefix) {
-    const result = await documentClient.query({
-        TableName: config.tableName,
-        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
-        ExpressionAttributeValues: {
-            ':pk': keys.userPk(userId),
-            ':prefix': skPrefix
-        }
-    }).promise();
-    return result.Items || [];
+async function getTursoClient() {
+    await turso.ensureSchema();
+    return turso.getClient();
+}
+
+async function getTursoItem(pk, sk) {
+    const client = await getTursoClient();
+    const result = await client.execute({
+        sql: 'SELECT data FROM entities WHERE pk = ? AND sk = ? LIMIT 1',
+        args: [pk, sk]
+    });
+    return parseEntityRow(result.rows?.[0] || null);
+}
+
+async function putTursoItem(item) {
+    const client = await getTursoClient();
+    const createdAt = item.createdAt || nowIso();
+    const updatedAt = item.updatedAt || nowIso();
+
+    await client.execute({
+        sql: `
+            INSERT INTO entities (pk, sk, entity_type, user_id, next_due_at, data, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(pk, sk) DO UPDATE SET
+                entity_type = excluded.entity_type,
+                user_id = excluded.user_id,
+                next_due_at = excluded.next_due_at,
+                data = excluded.data,
+                updated_at = excluded.updated_at
+        `,
+        args: [
+            item.PK,
+            item.SK,
+            item.entityType || null,
+            item.userId || null,
+            item.nextDueAt || null,
+            JSON.stringify(item),
+            createdAt,
+            updatedAt
+        ]
+    });
+}
+
+async function queryUserFromTurso(userId, skPrefix) {
+    const client = await getTursoClient();
+    const result = await client.execute({
+        sql: `
+            SELECT data
+            FROM entities
+            WHERE pk = ? AND sk LIKE ?
+            ORDER BY sk ASC
+        `,
+        args: [keys.userPk(userId), `${skPrefix}%`]
+    });
+
+    return (result.rows || [])
+        .map(parseEntityRow)
+        .filter(Boolean);
 }
 
 async function getTokenRecordByHash(tokenHash, tokenType) {
-    return getItem(keys.tokenPk(tokenHash), tokenType);
+    return getTursoItem(keys.tokenPk(tokenHash), tokenType);
 }
 
 async function getUserProfile(userId) {
-    return getItem(keys.userPk(userId), keys.profileSk());
+    return getDynamoItem(keys.userPk(userId), keys.profileSk());
 }
 
 async function upsertUserProfile(userId, changes) {
@@ -56,16 +112,16 @@ async function upsertUserProfile(userId, changes) {
         ...existing,
         ...changes
     };
-    await putItem(merged);
+    await putDynamoItem(merged);
     return merged;
 }
 
 async function listAccounts(userId) {
-    return queryByUser(userId, 'ACCOUNT#');
+    return queryUserFromTurso(userId, 'ACCOUNT#');
 }
 
 async function getAccount(userId, accountId) {
-    return getItem(keys.userPk(userId), keys.accountSk(accountId));
+    return getTursoItem(keys.userPk(userId), keys.accountSk(accountId));
 }
 
 async function upsertAccount(userId, account) {
@@ -83,12 +139,12 @@ async function upsertAccount(userId, account) {
         ...account,
         accountId
     };
-    await putItem(merged);
+    await putTursoItem(merged);
     return merged;
 }
 
 async function getUserPrefs(userId) {
-    return getItem(keys.userPk(userId), keys.prefsSk());
+    return getTursoItem(keys.userPk(userId), keys.prefsSk());
 }
 
 async function upsertUserPrefs(userId, changes) {
@@ -105,12 +161,12 @@ async function upsertUserPrefs(userId, changes) {
         ...existing,
         ...changes
     };
-    await putItem(merged);
+    await putTursoItem(merged);
     return merged;
 }
 
 async function getMailboxState(userId, accountId) {
-    return getItem(keys.userPk(userId), keys.mailboxSk(accountId));
+    return getDynamoItem(keys.userPk(userId), keys.mailboxSk(accountId));
 }
 
 async function upsertMailboxState(userId, accountId, changes) {
@@ -128,20 +184,25 @@ async function upsertMailboxState(userId, accountId, changes) {
         ...existing,
         ...changes
     };
-    await putItem(merged);
+    await putDynamoItem(merged);
     return merged;
 }
 
 async function listDueUsers(now = new Date()) {
-    const response = await documentClient.scan({
-        TableName: config.tableName,
-        FilterExpression: 'entityType = :type AND nextDueAt <= :nowIso',
-        ExpressionAttributeValues: {
-            ':type': 'USER_PREFS',
-            ':nowIso': now.toISOString()
-        }
-    }).promise();
-    return response.Items || [];
+    const client = await getTursoClient();
+    const result = await client.execute({
+        sql: `
+            SELECT data
+            FROM entities
+            WHERE entity_type = ? AND next_due_at <= ?
+            ORDER BY next_due_at ASC
+        `,
+        args: ['USER_PREFS', now.toISOString()]
+    });
+
+    return (result.rows || [])
+        .map(parseEntityRow)
+        .filter(Boolean);
 }
 
 module.exports = {

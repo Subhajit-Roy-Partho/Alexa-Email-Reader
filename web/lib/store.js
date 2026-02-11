@@ -1,33 +1,78 @@
 const { v4: uuidv4 } = require('uuid');
-const config = require('./config');
-const { documentClient } = require('./dynamo');
+const turso = require('./turso');
 const keys = require('./keys');
 
+function nowIso() {
+  return new Date().toISOString();
+}
+
+async function getDbClient() {
+  await turso.ensureSchema();
+  return turso.getClient();
+}
+
+function parseRowData(row) {
+  if (!row || typeof row.data !== 'string') {
+    return null;
+  }
+  return JSON.parse(row.data);
+}
+
 async function getItem(pk, sk) {
-  const response = await documentClient.get({
-    TableName: config.tableName,
-    Key: { PK: pk, SK: sk }
-  }).promise();
-  return response.Item || null;
+  const db = await getDbClient();
+  const result = await db.execute({
+    sql: 'SELECT data FROM entities WHERE pk = ? AND sk = ? LIMIT 1',
+    args: [pk, sk]
+  });
+
+  const row = result.rows?.[0] || null;
+  return parseRowData(row);
 }
 
 async function putItem(item) {
-  await documentClient.put({
-    TableName: config.tableName,
-    Item: item
-  }).promise();
+  const db = await getDbClient();
+  const createdAt = item.createdAt || nowIso();
+  const updatedAt = item.updatedAt || nowIso();
+
+  await db.execute({
+    sql: `
+      INSERT INTO entities (pk, sk, entity_type, user_id, next_due_at, data, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(pk, sk) DO UPDATE SET
+        entity_type = excluded.entity_type,
+        user_id = excluded.user_id,
+        next_due_at = excluded.next_due_at,
+        data = excluded.data,
+        updated_at = excluded.updated_at
+    `,
+    args: [
+      item.PK,
+      item.SK,
+      item.entityType || null,
+      item.userId || null,
+      item.nextDueAt || null,
+      JSON.stringify(item),
+      createdAt,
+      updatedAt
+    ]
+  });
 }
 
 async function queryUser(userId, prefix) {
-  const response = await documentClient.query({
-    TableName: config.tableName,
-    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
-    ExpressionAttributeValues: {
-      ':pk': keys.userPk(userId),
-      ':prefix': prefix
-    }
-  }).promise();
-  return response.Items || [];
+  const db = await getDbClient();
+  const result = await db.execute({
+    sql: `
+      SELECT data
+      FROM entities
+      WHERE pk = ? AND sk LIKE ?
+      ORDER BY sk ASC
+    `,
+    args: [keys.userPk(userId), `${prefix}%`]
+  });
+
+  return (result.rows || [])
+    .map(parseRowData)
+    .filter(Boolean);
 }
 
 async function getUserProfile(userId) {
@@ -41,8 +86,8 @@ async function upsertUserProfile(userId, changes = {}) {
     SK: keys.profileSk(),
     entityType: 'USER_PROFILE',
     userId,
-    createdAt: existing?.createdAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: existing?.createdAt || nowIso(),
+    updatedAt: nowIso(),
     ...existing,
     ...changes
   };
@@ -66,8 +111,8 @@ async function upsertPrefs(userId, changes = {}) {
     entityType: 'USER_PREFS',
     userId,
     pollingMinutes: existing?.pollingMinutes || 15,
-    createdAt: existing?.createdAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: existing?.createdAt || nowIso(),
+    updatedAt: nowIso(),
     ...existing,
     ...changes
   };
@@ -84,8 +129,8 @@ async function upsertAccount(userId, account) {
     entityType: 'LINKED_ACCOUNT',
     userId,
     accountId,
-    createdAt: existing?.createdAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: existing?.createdAt || nowIso(),
+    updatedAt: nowIso(),
     status: 'ACTIVE',
     ...existing,
     ...account,

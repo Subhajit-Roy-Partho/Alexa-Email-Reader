@@ -18,3 +18,10 @@ test('userIdFromEmail is stable and normalized', () => {
   assert.equal(a, b);
   assert.equal(a.length, 24);
 });
+
+test('encryptJson in web runtime does not use kms-envelope mode', async () => {
+  const encrypted = await security.encryptJson({ hello: 'world' });
+  assert.notEqual(encrypted.mode, 'kms-envelope');
+  assert.equal(typeof encrypted.ciphertext, 'string');
+  assert.ok(encrypted.ciphertext.length > 0);
+});
