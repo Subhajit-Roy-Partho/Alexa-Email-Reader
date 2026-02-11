@@ -8,7 +8,6 @@ function asInt(value, fallback) {
 }
 
 module.exports = {
-    dynamoRegion: process.env.EMAIL_READER_AWS_REGION || 'us-east-1',
     tableName: process.env.EMAIL_READER_TABLE || 'EmailReader',
     secretTable: process.env.ALEXA_SECRET_TABLE || process.env.EMAIL_READER_TABLE || 'EmailReader',
     secretPk: process.env.ALEXA_SECRET_PK || 'SYSTEM#SECRETS',

@@ -1,5 +1,6 @@
 'use strict';
 
+const AWS = require('aws-sdk');
 const config = require('../config');
 const { documentClient } = require('../store/dynamoClient');
 
@@ -31,6 +32,45 @@ function getSecretTableName() {
         || process.env.EMAIL_READER_TABLE
         || config.tableName
         || 'EmailReader';
+}
+
+function collectCandidates(values) {
+    const seen = new Set();
+    const result = [];
+
+    for (const value of values) {
+        const normalized = String(value || '').trim();
+        if (!normalized || seen.has(normalized)) {
+            continue;
+        }
+        seen.add(normalized);
+        result.push(normalized);
+    }
+
+    return result;
+}
+
+function getSecretTableNames() {
+    return collectCandidates([
+        process.env.ALEXA_SECRET_TABLE,
+        config.secretTable,
+        process.env.EMAIL_READER_TABLE,
+        config.tableName,
+        getSecretTableName(),
+        'EmailReader'
+    ]);
+}
+
+function getSecretRegions() {
+    return collectCandidates([
+        '__default__',
+        process.env.ALEXA_SECRET_REGION,
+        process.env.EMAIL_READER_AWS_REGION,
+        process.env.AWS_REGION,
+        'us-east-1',
+        'eu-west-1',
+        'us-west-2'
+    ]);
 }
 
 function getSecretPk() {
@@ -77,8 +117,26 @@ function toSecretMap(value) {
     return mapped;
 }
 
+function isResourceNotFoundError(error) {
+    const message = String(error?.message || '');
+    return error?.code === 'ResourceNotFoundException'
+        || /Requested resource not found/i.test(message);
+}
+
+function createDocumentClient(region) {
+    if (region === '__default__') {
+        return documentClient;
+    }
+
+    return new AWS.DynamoDB.DocumentClient({
+        region,
+        convertEmptyValues: true
+    });
+}
+
 async function loadSecretsFromDynamo() {
-    const tableName = getSecretTableName();
+    const tableNames = getSecretTableNames();
+    const regions = getSecretRegions();
     const keyCandidates = [
         {
             PK: getSecretPk(),
@@ -91,22 +149,39 @@ async function loadSecretsFromDynamo() {
 
     let lastError = null;
 
-    for (const key of keyCandidates) {
-        try {
-            const response = await documentClient.get({
-                TableName: tableName,
-                Key: key
-            }).promise();
+    for (const region of regions) {
+        const client = createDocumentClient(region);
 
-            if (response.Item) {
-                return toSecretMap(response.Item.secretValues);
+        for (const tableName of tableNames) {
+            let tableMissing = false;
+
+            for (const key of keyCandidates) {
+                try {
+                    const response = await client.get({
+                        TableName: tableName,
+                        Key: key
+                    }).promise();
+
+                    if (response.Item) {
+                        return toSecretMap(response.Item.secretValues);
+                    }
+                } catch (error) {
+                    if (error?.code === 'ValidationException') {
+                        lastError = error;
+                        continue;
+                    }
+                    if (isResourceNotFoundError(error)) {
+                        lastError = error;
+                        tableMissing = true;
+                        break;
+                    }
+                    lastError = error;
+                }
             }
-        } catch (error) {
-            if (error?.code === 'ValidationException') {
-                lastError = error;
+
+            if (tableMissing) {
                 continue;
             }
-            throw error;
         }
     }
 
