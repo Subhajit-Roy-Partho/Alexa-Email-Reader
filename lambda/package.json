@@ -13,6 +13,7 @@
   "dependencies": {
     "@libsql/hrana-client": "^0.9.0",
     "ask-sdk-core": "^2.14.0",
+    "ask-sdk-model": "^1.29.0",
     "aws-sdk": "^2.1692.0",
     "imapflow": "1.0.181",
     "uuid": "^11.0.5"
