@@ -1,0 +1,20 @@
+{
+  "name": "email-reader-skill",
+  "version": "1.0.0",
+  "description": "Alexa skill backend for email reader",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test",
+    "build": "npm run test"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@libsql/client": "^0.17.0",
+    "ask-sdk-core": "^2.14.0",
+    "aws-sdk": "^2.1692.0",
+    "imapflow": "^1.0.181",
+    "uuid": "^11.0.5"
+  }
+}
