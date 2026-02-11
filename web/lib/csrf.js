@@ -1,38 +1,30 @@
-const { cookies } = require('next/headers');
 const config = require('./config');
 const { randomToken, createSignedValue, verifySignedValue } = require('./security');
 
-const CSRF_COOKIE = 'email_reader_csrf';
+const CSRF_TTL_MS = 1000 * 60 * 60 * 12;
 
 function issueCsrfToken() {
   const token = randomToken(24);
-  const signed = createSignedValue({ token, iat: Date.now() }, config.csrfSecret);
-  cookies().set(CSRF_COOKIE, signed, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 60 * 12
-  });
-  return token;
+  return createSignedValue(
+    {
+      token,
+      iat: Date.now(),
+      exp: Date.now() + CSRF_TTL_MS
+    },
+    config.csrfSecret
+  );
 }
 
-function readCsrfToken() {
-  const raw = cookies().get(CSRF_COOKIE)?.value;
-  if (!raw) {
-    return null;
-  }
-  const parsed = verifySignedValue(raw, config.csrfSecret);
-  return parsed?.token || null;
+function readCsrfToken(request, formData) {
+  return formData?.get('csrfToken')
+    || request.headers.get('x-csrf-token')
+    || '';
 }
 
 async function assertCsrf(request, formData) {
-  const expected = readCsrfToken();
-  const provided = formData?.get('csrfToken')
-    || request.headers.get('x-csrf-token')
-    || '';
-
-  if (!expected || !provided || expected !== provided) {
+  const provided = readCsrfToken(request, formData);
+  const parsed = verifySignedValue(String(provided || ''), config.csrfSecret);
+  if (!parsed?.token || Number(parsed.exp || 0) <= Date.now()) {
     throw new Error('Invalid CSRF token');
   }
 }
