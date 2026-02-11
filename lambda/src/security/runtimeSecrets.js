@@ -61,6 +61,26 @@ function getSecretTableNames() {
     ]);
 }
 
+async function discoverTableNames(client) {
+    const discovered = [];
+    let exclusiveStartTableName;
+
+    try {
+        do {
+            const response = await client.listTables({
+                ExclusiveStartTableName: exclusiveStartTableName
+            }).promise();
+
+            discovered.push(...(response.TableNames || []));
+            exclusiveStartTableName = response.LastEvaluatedTableName;
+        } while (exclusiveStartTableName);
+    } catch (_error) {
+        return [];
+    }
+
+    return discovered.filter((name) => /email|reader|secret|alexa/i.test(String(name)));
+}
+
 function getSecretRegions() {
     return collectCandidates([
         '__default__',
@@ -135,7 +155,7 @@ function createDocumentClient(region) {
 }
 
 async function loadSecretsFromDynamo() {
-    const tableNames = getSecretTableNames();
+    const seedTableNames = getSecretTableNames();
     const regions = getSecretRegions();
     const keyCandidates = [
         {
@@ -151,6 +171,8 @@ async function loadSecretsFromDynamo() {
 
     for (const region of regions) {
         const client = createDocumentClient(region);
+        const discoveredTableNames = await discoverTableNames(client);
+        const tableNames = collectCandidates([...seedTableNames, ...discoveredTableNames]);
 
         for (const tableName of tableNames) {
             let tableMissing = false;
