@@ -17,7 +17,8 @@ function getImapConfig(account) {
         auth: {
             user: credentials.username,
             pass: credentials.password
-        }
+        },
+        logger: false
     };
 }
 
@@ -47,8 +48,7 @@ async function getRecentMessages(account, limit = 10) {
     return withClient(account, async (client) => {
         const lock = await client.getMailboxLock('INBOX');
         try {
-            const mailbox = await client.mailboxOpen('INBOX');
-            const exists = mailbox.exists || 0;
+            const exists = client.mailbox?.exists || 0;
             if (!exists) {
                 return [];
             }

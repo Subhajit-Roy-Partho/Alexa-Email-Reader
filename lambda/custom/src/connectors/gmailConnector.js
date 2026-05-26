@@ -2,6 +2,11 @@
 
 const { clip } = require('../utils/text');
 
+function safeIso(dateStr) {
+    const d = new Date(dateStr);
+    return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
 function decodeBase64Url(value) {
     if (!value) {
         return '';
@@ -90,7 +95,7 @@ async function getRecentMessages(account, limit = 10, context = {}) {
             subject: readHeader(headers, 'Subject', '(No subject)'),
             snippet: clip(details.snippet || bodyText, 180),
             bodyText: clip(bodyText, 8000),
-            receivedAt: new Date(readHeader(headers, 'Date', new Date().toISOString())).toISOString(),
+            receivedAt: safeIso(readHeader(headers, 'Date', '')),
             isUnread: (details.labelIds || []).includes('UNREAD')
         });
     }

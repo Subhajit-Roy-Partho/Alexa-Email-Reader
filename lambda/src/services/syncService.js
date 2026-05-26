@@ -5,10 +5,6 @@ const repository = require('../store/repository');
 const { getConnector } = require('../connectors');
 const oauthRefreshService = require('./oauthRefreshService');
 
-function isSameMessage(a, b) {
-    return String(a || '') === String(b || '');
-}
-
 async function syncAccount(userId, account) {
     const connector = getConnector(account.provider);
     const previousState = await repository.getMailboxState(userId, account.accountId);
@@ -120,6 +116,5 @@ module.exports = {
     syncUser,
     listDueUsers,
     markUserNextDue,
-    isStateStale,
-    isSameMessage
+    isStateStale
 };

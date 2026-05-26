@@ -12,10 +12,13 @@ const { createAuthorizationCode } = tokenStoreModule;
 function isAllowedRedirectUri(redirectUri) {
   try {
     const parsed = new URL(redirectUri);
-    if (parsed.protocol !== 'https:' && parsed.hostname !== 'localhost') {
+    if (parsed.hostname === 'localhost') {
+      return true;
+    }
+    if (parsed.protocol !== 'https:') {
       return false;
     }
-    return parsed.hostname.includes('amazon') || parsed.hostname === 'localhost';
+    return parsed.hostname === 'amazon.com' || parsed.hostname.endsWith('.amazon.com');
   } catch (_error) {
     return false;
   }

@@ -2,6 +2,8 @@ const config = require('./config');
 const store = require('./store');
 const { encryptJson } = require('./security');
 
+const MANUAL_PROVIDERS = new Set(['imap', 'pop']);
+
 function normalizeProvider(provider) {
   return String(provider || '').trim().toLowerCase();
 }
@@ -24,6 +26,9 @@ async function assertAccountCapacity(userId) {
 async function addManualAccount(userId, input) {
   await assertAccountCapacity(userId);
   const provider = normalizeProvider(input.provider);
+  if (!MANUAL_PROVIDERS.has(provider)) {
+    throw new Error(`Unsupported provider for manual account: ${provider}`);
+  }
   const label = normalizeLabel(input.label, provider);
 
   const credentials = {

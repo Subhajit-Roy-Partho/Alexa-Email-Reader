@@ -2,6 +2,11 @@
 
 const { clip, stripHtml } = require('./text');
 
+function safeIso(dateStr) {
+    const d = new Date(dateStr);
+    return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
 function parseHeaders(raw) {
     const headers = {};
     const lines = String(raw || '').split(/\r?\n/);
@@ -42,7 +47,7 @@ function parseRawMessage(raw, fallbackId) {
         subject,
         snippet: clip(bodyText, 180),
         bodyText: clip(bodyText, 8000),
-        receivedAt: new Date(date).toISOString(),
+        receivedAt: safeIso(date),
         isUnread: true
     };
 }

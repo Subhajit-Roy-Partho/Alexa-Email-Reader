@@ -31,9 +31,13 @@ function verifySignedValue(value, secret) {
   if (!value || !value.includes('.')) {
     return null;
   }
-  const [payload, sig] = value.split('.');
+  const dotIndex = value.indexOf('.');
+  const payload = value.slice(0, dotIndex);
+  const sig = value.slice(dotIndex + 1);
   const expected = signHmac(payload, secret);
-  if (sig !== expected) {
+  const sigBuf = Buffer.from(sig);
+  const expBuf = Buffer.from(expected);
+  if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
     return null;
   }
   try {

@@ -103,6 +103,32 @@ const ReadEmailBodyIntentHandler = {
         return withLinkedAccount(handlerInput, async (userId) => {
             const accountName = slotValue(handlerInput, 'accountName');
             const emailIndex = slotValue(handlerInput, 'emailIndex') || '1';
+            const idx = Number.parseInt(emailIndex, 10);
+            const normalizedIndex = Number.isInteger(idx) && idx > 0 ? idx - 1 : 0;
+
+            // Fast path: reuse messages already fetched this session to avoid a DB round-trip.
+            // Only used when no specific account name is requested (the session has messages
+            // for the default account that was just read aloud).
+            const sessionAttributes = handlerInput.attributesManager.getSessionAttributes() || {};
+            const sessionMessages = Array.isArray(sessionAttributes.lastMessages)
+                ? sessionAttributes.lastMessages
+                : null;
+
+            if (sessionMessages?.length && !accountName) {
+                const message = sessionMessages[normalizedIndex] || null;
+                if (!message) {
+                    return handlerInput.responseBuilder
+                        .speak(`I could not find email ${normalizedIndex + 1}. Try asking for latest emails first.`)
+                        .reprompt('Say, read my latest emails.')
+                        .getResponse();
+                }
+                const speakOutput = `Email ${normalizedIndex + 1} from ${message.from}. Subject ${message.subject}. ${message.bodyText}`;
+                return handlerInput.responseBuilder
+                    .speak(speakOutput)
+                    .getResponse();
+            }
+
+            // Slow path: look up from the DynamoDB mailbox cache.
             const result = await mailService.getEmailByIndex(userId, accountName, emailIndex);
 
             if (!result.account) {
