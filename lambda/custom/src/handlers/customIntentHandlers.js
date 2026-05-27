@@ -23,6 +23,32 @@ function slotValue(handlerInput, slotName) {
     return slots[slotName]?.value || '';
 }
 
+function stripHtmlForSpeech(text, maxLen = 1000) {
+    if (!text) {
+        return '';
+    }
+    let s = String(text);
+    // Named HTML entities
+    s = s
+        .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+        .replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&apos;/gi, "'")
+        .replace(/&nbsp;/gi, ' ').replace(/&zwnj;/gi, '').replace(/&zwj;/gi, '')
+        .replace(/&hellip;/gi, '...').replace(/&mdash;/gi, ' - ').replace(/&ndash;/gi, ' - ')
+        .replace(/&rsquo;|&lsquo;/gi, "'").replace(/&rdquo;|&ldquo;/gi, '"');
+    // Numeric entities — discard invisible / zero-width code points
+    s = s.replace(/&#x([0-9a-f]+);/gi, (_, h) => {
+        const cp = parseInt(h, 16);
+        return cp > 31 && cp < 8192 ? String.fromCharCode(cp) : ' ';
+    });
+    s = s.replace(/&#([0-9]+);/g, (_, d) => {
+        const cp = parseInt(d, 10);
+        return cp > 31 && cp < 8192 ? String.fromCharCode(cp) : ' ';
+    });
+    // Strip HTML tags, collapse whitespace
+    s = s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    return s.length > maxLen ? `${s.slice(0, maxLen)}…` : s;
+}
+
 function resolveEmailIndex(rawValue) {
     if (!rawValue) {
         return 1;
@@ -65,7 +91,13 @@ const GetUnreadCountIntentHandler = {
     async handle(handlerInput) {
         return withLinkedAccount(handlerInput, async (userId) => {
             const accountName = slotValue(handlerInput, 'accountName');
-            const result = await mailService.getUnreadCount(userId, accountName);
+
+            // Try fast cache snapshot first; fall back to live sync
+            let result = await mailService.getUnreadCountSnapshot(userId, accountName);
+            if (!result.hasCachedState) {
+                result = await mailService.getUnreadCount(userId, accountName);
+            }
+
             if (!result.account) {
                 return handlerInput.responseBuilder
                     .speak('I could not find a linked mailbox. Open the companion web app to add one.')
@@ -116,7 +148,8 @@ const ReadLatestEmailsIntentHandler = {
                 .map((message, idx) => {
                     const unreadMark = message.isUnread ? '' : '(read) ';
                     const cat = message.category ? `[${message.category}] ` : '';
-                    return `${idx + 1}. ${cat}${unreadMark}From ${message.from}. Subject: ${message.subject}. ${message.snippet}`;
+                    const snippet = stripHtmlForSpeech(message.snippet, 120);
+                    return `${idx + 1}. ${cat}${unreadMark}From ${stripHtmlForSpeech(message.from)}. Subject: ${stripHtmlForSpeech(message.subject)}. ${snippet}`;
                 })
                 .join(' ');
 
@@ -165,7 +198,7 @@ const ReadEmailsByCategoryIntentHandler = {
             const lines = result.messages
                 .map((msg, idx) => {
                     const unreadMark = msg.isUnread ? '(unread) ' : '';
-                    return `${idx + 1}. ${unreadMark}From ${msg.from}. Subject: ${msg.subject}.`;
+                    return `${idx + 1}. ${unreadMark}From ${stripHtmlForSpeech(msg.from)}. Subject: ${stripHtmlForSpeech(msg.subject)}.`;
                 })
                 .join(' ');
 
@@ -235,7 +268,7 @@ const ReadEmailBodyIntentHandler = {
                 }
             }
 
-            const speakOutput = `Email ${normalizedIndex + 1} from ${message.from}. Subject: ${message.subject}. ${message.bodyText}`;
+            const speakOutput = `Email ${normalizedIndex + 1} from ${stripHtmlForSpeech(message.from)}. Subject: ${stripHtmlForSpeech(message.subject)}. ${stripHtmlForSpeech(message.bodyText)}`;
             return handlerInput.responseBuilder
                 .speak(speakOutput)
                 .reprompt('You can say archive, delete, mark as read, or ask to read another email.')
