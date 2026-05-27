@@ -340,6 +340,19 @@ const EmailActionIntentHandler = {
 
 // ── ComposeEmailIntent ────────────────────────────────────────────────────────
 
+function parseComposeRequest(rawRequest) {
+    const text = String(rawRequest || '').trim();
+    const toMatch = text.match(/^(?:to\s+)?([^\s,]+(?:\s+[^\s,]+)*?)\s+(?:about|regarding|re:?)\s+(.+)$/i);
+    if (toMatch) {
+        return { recipient: toMatch[1].trim(), topic: toMatch[2].trim() };
+    }
+    const toOnlyMatch = text.match(/^(?:to\s+)?(.+)$/i);
+    return {
+        recipient: toOnlyMatch ? toOnlyMatch[1].trim() : text,
+        topic: text
+    };
+}
+
 const ComposeEmailIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -347,15 +360,16 @@ const ComposeEmailIntentHandler = {
     },
     async handle(handlerInput) {
         return withLinkedAccount(handlerInput, async (userId) => {
-            const recipient = slotValue(handlerInput, 'recipientName') || slotValue(handlerInput, 'recipientEmail') || '';
-            const topic = slotValue(handlerInput, 'emailTopic') || '';
+            const rawRequest = slotValue(handlerInput, 'composeRequest') || '';
 
-            if (!recipient || !topic) {
+            if (!rawRequest) {
                 return handlerInput.responseBuilder
                     .speak('Please tell me who to send it to and what the email is about. For example, say: compose email to John about the project update.')
                     .reprompt('Say compose email to someone about a topic.')
                     .getResponse();
             }
+
+            const { recipient, topic } = parseComposeRequest(rawRequest);
 
             let subject, body;
             try {

@@ -132,22 +132,18 @@
           "name": "ComposeEmailIntent",
           "slots": [
             {
-              "name": "recipientName",
-              "type": "AMAZON.SearchQuery"
-            },
-            {
-              "name": "emailTopic",
+              "name": "composeRequest",
               "type": "AMAZON.SearchQuery"
             }
           ],
           "samples": [
-            "compose email to {recipientName} about {emailTopic}",
-            "write email to {recipientName} about {emailTopic}",
-            "draft email to {recipientName} about {emailTopic}",
-            "compose a message to {recipientName} about {emailTopic}",
-            "write an email to {recipientName} regarding {emailTopic}",
-            "send email to {recipientName} about {emailTopic}",
-            "create email to {recipientName} about {emailTopic}"
+            "compose email {composeRequest}",
+            "write email {composeRequest}",
+            "draft an email {composeRequest}",
+            "compose a message {composeRequest}",
+            "write a message {composeRequest}",
+            "create an email {composeRequest}",
+            "new email {composeRequest}"
           ]
         },
         {
