@@ -3,6 +3,7 @@
     "manifestVersion": "1.0",
     "publishingInformation": {
       "isAvailableWorldwide": true,
+      "category": "COMMUNICATION",
       "testingInstructions": "Link account in Alexa app, connect mailbox via hosted web app, then test unread count, latest mail readout, and notification permission flow.",
       "distributionCountries": [],
       "automaticClonedLocale": {
@@ -16,7 +17,9 @@
         "en-US": {
           "name": "Email Reader",
           "summary": "Read your latest emails and hear unread counts with Alexa.",
-          "description": "Email Reader connects Gmail, Outlook, and custom IMAP/POP mailboxes. Ask for unread counts, hear your latest messages, and get Alexa notifications when new mail arrives.",
+          "description": "Email Reader connects Gmail, Outlook, and custom IMAP/POP mailboxes. Ask for unread counts, hear your latest messages, compose emails with AI assistance, manage your inbox by category, and get Alexa notifications when new mail arrives.",
+          "largeIconUri": "https://alexamail.vercel.app/alexa-skill-icon-512.png",
+          "smallIconUri": "https://alexamail.vercel.app/alexa-skill-icon-108.png",
           "examplePhrases": [
             "Alexa, open Email Reader",
             "Alexa, ask Email Reader how many unread emails I have",
@@ -26,8 +29,12 @@
             "email",
             "mail",
             "inbox",
+            "gmail",
+            "outlook",
             "unread",
-            "notifications"
+            "notifications",
+            "compose",
+            "draft"
           ]
         }
       }
