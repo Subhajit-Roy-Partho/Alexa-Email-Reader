@@ -8,3 +8,4 @@ ask-resources.json
 .env
 lambda/runtime-secrets.txt
 lambda/custom/runtime-secrets.txt
+.vercel

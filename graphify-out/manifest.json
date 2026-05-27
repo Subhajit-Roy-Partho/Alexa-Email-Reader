@@ -1,0 +1,542 @@
+{
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/jsconfig.json": {
+    "mtime": 1779824690.0679245,
+    "ast_hash": "7e36d42639f3d2e724a61c0c3526adf4",
+    "semantic_hash": "7e36d42639f3d2e724a61c0c3526adf4"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/next.config.js": {
+    "mtime": 1779824690.0696535,
+    "ast_hash": "0a8ad2ed9a771e9042ebebb3f01fcf7b",
+    "semantic_hash": "0a8ad2ed9a771e9042ebebb3f01fcf7b"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/package.json": {
+    "mtime": 1779824690.0701315,
+    "ast_hash": "52ffe94c30330d29151cd49036b8f84c",
+    "semantic_hash": "52ffe94c30330d29151cd49036b8f84c"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/middleware.js": {
+    "mtime": 1779824690.0695443,
+    "ast_hash": "fed5d93bfafd36a3a085f1d62e1e36e3",
+    "semantic_hash": "fed5d93bfafd36a3a085f1d62e1e36e3"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/layout.js": {
+    "mtime": 1779824690.0671527,
+    "ast_hash": "21ef697bba0c934b8eaca57e8855dbeb",
+    "semantic_hash": "21ef697bba0c934b8eaca57e8855dbeb"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/page.js": {
+    "mtime": 1779824690.0672643,
+    "ast_hash": "e4a45a90e49efe0a5d2f7f99da0e05bc",
+    "semantic_hash": "e4a45a90e49efe0a5d2f7f99da0e05bc"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/privacy/page.js": {
+    "mtime": 1779824690.067427,
+    "ast_hash": "bfb45a5c7615a6a6a8ea8b9a624ec2e3",
+    "semantic_hash": "bfb45a5c7615a6a6a8ea8b9a624ec2e3"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/terms/page.js": {
+    "mtime": 1779824690.0678232,
+    "ast_hash": "866e13f4feca89e10d92dda055780222",
+    "semantic_hash": "866e13f4feca89e10d92dda055780222"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/dashboard/page.js": {
+    "mtime": 1779824690.066857,
+    "ast_hash": "1e59b969f21cd2e91a0732b6c88c5849",
+    "semantic_hash": "1e59b969f21cd2e91a0732b6c88c5849"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/signin/page.js": {
+    "mtime": 1779824690.0676467,
+    "ast_hash": "3c0fd179a626112a474fe9f81978b6f7",
+    "semantic_hash": "3c0fd179a626112a474fe9f81978b6f7"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/alexa/oauth/token/route.js": {
+    "mtime": 1779824690.0651865,
+    "ast_hash": "f514029b8e5bf9ffffae85d152516f60",
+    "semantic_hash": "f514029b8e5bf9ffffae85d152516f60"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/alexa/oauth/revoke/route.js": {
+    "mtime": 1779824690.0650032,
+    "ast_hash": "dfd5b0096832d03cf87e5ac27cb509a3",
+    "semantic_hash": "dfd5b0096832d03cf87e5ac27cb509a3"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/alexa/oauth/authorize/route.js": {
+    "mtime": 1779826393.9821188,
+    "ast_hash": "3d819644a71c45c033a2d0c491ecacee",
+    "semantic_hash": "3d819644a71c45c033a2d0c491ecacee"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/providers/google/callback/route.js": {
+    "mtime": 1779824690.0655468,
+    "ast_hash": "3d03b729228b61fed7f237afbb6e5ce3",
+    "semantic_hash": "3d03b729228b61fed7f237afbb6e5ce3"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/providers/google/connect/route.js": {
+    "mtime": 1779824690.065733,
+    "ast_hash": "e5b5d9bfe641fa0dca5635999b90ffe8",
+    "semantic_hash": "e5b5d9bfe641fa0dca5635999b90ffe8"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/providers/microsoft/callback/route.js": {
+    "mtime": 1779824690.065965,
+    "ast_hash": "87b2b6e660eda835999a57c5c800c784",
+    "semantic_hash": "87b2b6e660eda835999a57c5c800c784"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/providers/microsoft/connect/route.js": {
+    "mtime": 1779824690.0661285,
+    "ast_hash": "692e554acdec25ad1e94978a6357d285",
+    "semantic_hash": "692e554acdec25ad1e94978a6357d285"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/accounts/polling/route.js": {
+    "mtime": 1779824690.0644743,
+    "ast_hash": "322b1028a49c37842cde63450ffcf8be",
+    "semantic_hash": "322b1028a49c37842cde63450ffcf8be"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/accounts/delete/route.js": {
+    "mtime": 1779824690.0640998,
+    "ast_hash": "07f8e4c3d4371589984b309ce4be7d8e",
+    "semantic_hash": "07f8e4c3d4371589984b309ce4be7d8e"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/accounts/default/route.js": {
+    "mtime": 1779824690.0639172,
+    "ast_hash": "60a02f2bd0390ac0b3f25b9a4c80be5f",
+    "semantic_hash": "60a02f2bd0390ac0b3f25b9a4c80be5f"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/accounts/manual/route.js": {
+    "mtime": 1779824690.0642996,
+    "ast_hash": "18d46958ff84a9f3f087c676f6b17498",
+    "semantic_hash": "18d46958ff84a9f3f087c676f6b17498"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/session/logout/route.js": {
+    "mtime": 1779824690.066616,
+    "ast_hash": "9033df38c7b93630cc1a7bfc73091128",
+    "semantic_hash": "9033df38c7b93630cc1a7bfc73091128"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/app/api/session/login/route.js": {
+    "mtime": 1779824690.0664306,
+    "ast_hash": "19d60eba77d15b9fd87dd523c5d480c7",
+    "semantic_hash": "19d60eba77d15b9fd87dd523c5d480c7"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/tests/userAuth.test.js": {
+    "mtime": 1779824690.0710285,
+    "ast_hash": "32469a319a1e78e8bcad8a60eb0c0ec7",
+    "semantic_hash": "32469a319a1e78e8bcad8a60eb0c0ec7"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/tests/tokenStore.test.js": {
+    "mtime": 1779824690.0709047,
+    "ast_hash": "0cb0b513e3bd7789d00cc86e18ef7a94",
+    "semantic_hash": "0cb0b513e3bd7789d00cc86e18ef7a94"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/tests/loginService.test.js": {
+    "mtime": 1779824690.070549,
+    "ast_hash": "af1109137e2376d2040c35b2861540d4",
+    "semantic_hash": "af1109137e2376d2040c35b2861540d4"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/tests/security.test.js": {
+    "mtime": 1779824690.0706801,
+    "ast_hash": "f285758a789ea0d94fbbfca5defc41fe",
+    "semantic_hash": "f285758a789ea0d94fbbfca5defc41fe"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/tests/store.test.js": {
+    "mtime": 1779824690.07079,
+    "ast_hash": "322572e08b157ba7f6d1150c6c4fa418",
+    "semantic_hash": "322572e08b157ba7f6d1150c6c4fa418"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/tests/accounts.test.js": {
+    "mtime": 1779824690.0704367,
+    "ast_hash": "95625ecd106c725e274479ef8e2771a6",
+    "semantic_hash": "95625ecd106c725e274479ef8e2771a6"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/loginService.js": {
+    "mtime": 1779824690.0685282,
+    "ast_hash": "ed5809dc8f30b8b5bc1f67c924a0a1a9",
+    "semantic_hash": "ed5809dc8f30b8b5bc1f67c924a0a1a9"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/security.js": {
+    "mtime": 1779826400.6621277,
+    "ast_hash": "06263bba578d200d73d380f500aa8520",
+    "semantic_hash": "06263bba578d200d73d380f500aa8520"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/userAuth.js": {
+    "mtime": 1779824690.069439,
+    "ast_hash": "6b419f0795d0620f04ad0a706c80dc5d",
+    "semantic_hash": "6b419f0795d0620f04ad0a706c80dc5d"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/turso.js": {
+    "mtime": 1779824690.069339,
+    "ast_hash": "6b63e88f436bd55ef2c5f400e90527ce",
+    "semantic_hash": "6b63e88f436bd55ef2c5f400e90527ce"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/providerOAuth.js": {
+    "mtime": 1779824690.068747,
+    "ast_hash": "680040eedb06b4a5731dd7e41ae993cc",
+    "semantic_hash": "680040eedb06b4a5731dd7e41ae993cc"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/keys.js": {
+    "mtime": 1779824690.068428,
+    "ast_hash": "8e3702de8d1cd33cb8cdc999de7bc0df",
+    "semantic_hash": "8e3702de8d1cd33cb8cdc999de7bc0df"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/session.js": {
+    "mtime": 1779824690.0689585,
+    "ast_hash": "78ef1da4d7d387827ed6db74c9f3523e",
+    "semantic_hash": "78ef1da4d7d387827ed6db74c9f3523e"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/store.js": {
+    "mtime": 1779824690.0690982,
+    "ast_hash": "0a160245856e123de41df06bc2e9b21a",
+    "semantic_hash": "0a160245856e123de41df06bc2e9b21a"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/tokenStore.js": {
+    "mtime": 1779824690.0692165,
+    "ast_hash": "985e7830a4c851c6e0f3a0ca9c701f01",
+    "semantic_hash": "985e7830a4c851c6e0f3a0ca9c701f01"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/accounts.js": {
+    "mtime": 1779826501.081384,
+    "ast_hash": "df26613e6c71c582684353a19a152bef",
+    "semantic_hash": "df26613e6c71c582684353a19a152bef"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/csrf.js": {
+    "mtime": 1779824690.0683312,
+    "ast_hash": "d442b6b900915fbec6dfee2045b325a5",
+    "semantic_hash": "d442b6b900915fbec6dfee2045b325a5"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/config.js": {
+    "mtime": 1779824690.0682304,
+    "ast_hash": "13c0df21372dcf578c121eed61599921",
+    "semantic_hash": "13c0df21372dcf578c121eed61599921"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/web/lib/oauthState.js": {
+    "mtime": 1779824690.0686316,
+    "ast_hash": "fa2ab7e4b344380f54f63ec5e3ba1621",
+    "semantic_hash": "fa2ab7e4b344380f54f63ec5e3ba1621"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/skill-package/skill.json": {
+    "mtime": 1779824690.0634189,
+    "ast_hash": "1ed0ed140132e0352aeb4983e0fbefee",
+    "semantic_hash": "1ed0ed140132e0352aeb4983e0fbefee"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/skill-package/interactionModels/custom/en-US.json": {
+    "mtime": 1779824690.063286,
+    "ast_hash": "91bc79ce270c34d30fbc53da50b96bd9",
+    "semantic_hash": "91bc79ce270c34d30fbc53da50b96bd9"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/index.js": {
+    "mtime": 1779824690.0583282,
+    "ast_hash": "c5538029d1578b8fe393699c3c82b4b4",
+    "semantic_hash": "c5538029d1578b8fe393699c3c82b4b4"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/package.json": {
+    "mtime": 1779824690.0585907,
+    "ast_hash": "b8918a66a554b6b012d7e25dda393190",
+    "semantic_hash": "b8918a66a554b6b012d7e25dda393190"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/tests/tokenHash.test.js": {
+    "mtime": 1779824690.0629206,
+    "ast_hash": "3f42d570aa47f7524d0ea52fc7752703",
+    "semantic_hash": "3f42d570aa47f7524d0ea52fc7752703"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/tests/runtimeSecrets.test.js": {
+    "mtime": 1779824690.062701,
+    "ast_hash": "a276727137084dc070db221f2d9d752e",
+    "semantic_hash": "a276727137084dc070db221f2d9d752e"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/tests/syncService.test.js": {
+    "mtime": 1779824690.0628142,
+    "ast_hash": "81a4eb650bbaae63daed1f8dcd923c70",
+    "semantic_hash": "81a4eb650bbaae63daed1f8dcd923c70"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/tests/accountService.test.js": {
+    "mtime": 1779824690.0624444,
+    "ast_hash": "3dc71a354dae33ad9c46046a06b2a47d",
+    "semantic_hash": "3dc71a354dae33ad9c46046a06b2a47d"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/tests/authService.test.js": {
+    "mtime": 1779824690.0625482,
+    "ast_hash": "6f2fb371f6fb4f8b49e719e6a052c896",
+    "semantic_hash": "6f2fb371f6fb4f8b49e719e6a052c896"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/index.js": {
+    "mtime": 1779824690.0537267,
+    "ast_hash": "c5538029d1578b8fe393699c3c82b4b4",
+    "semantic_hash": "c5538029d1578b8fe393699c3c82b4b4"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/package.json": {
+    "mtime": 1779824690.0541146,
+    "ast_hash": "b8918a66a554b6b012d7e25dda393190",
+    "semantic_hash": "b8918a66a554b6b012d7e25dda393190"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/skill.js": {
+    "mtime": 1779824690.0568693,
+    "ast_hash": "af3c005e7dc69b7d54856f00c6883bc9",
+    "semantic_hash": "af3c005e7dc69b7d54856f00c6883bc9"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/config.js": {
+    "mtime": 1779824690.0542905,
+    "ast_hash": "a34d6570f1bfa030f916ea34dfa4176b",
+    "semantic_hash": "a34d6570f1bfa030f916ea34dfa4176b"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/connectors/imapConnector.js": {
+    "mtime": 1779826489.7243888,
+    "ast_hash": "f05e670a045303dd76d78199f17e5496",
+    "semantic_hash": "f05e670a045303dd76d78199f17e5496"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/connectors/gmailConnector.js": {
+    "mtime": 1779826462.9274142,
+    "ast_hash": "ca5d5d3c1cdb5cbbc1a1e2b6320ce017",
+    "semantic_hash": "ca5d5d3c1cdb5cbbc1a1e2b6320ce017"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/connectors/index.js": {
+    "mtime": 1779824690.0546958,
+    "ast_hash": "2f8fa862e0e41780e37d76e547d1d702",
+    "semantic_hash": "2f8fa862e0e41780e37d76e547d1d702"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/connectors/outlookConnector.js": {
+    "mtime": 1779824690.0548165,
+    "ast_hash": "fb646545ae44f36353803a6eadf6ed0a",
+    "semantic_hash": "fb646545ae44f36353803a6eadf6ed0a"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/connectors/popConnector.js": {
+    "mtime": 1779824690.0549831,
+    "ast_hash": "25f5f54b0db150980e33de5f3b48881f",
+    "semantic_hash": "25f5f54b0db150980e33de5f3b48881f"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/security/runtimeSecrets.js": {
+    "mtime": 1779824690.0559483,
+    "ast_hash": "eb4177ad253b162ff916b2339d054b61",
+    "semantic_hash": "eb4177ad253b162ff916b2339d054b61"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/security/cryptoService.js": {
+    "mtime": 1779824690.0557675,
+    "ast_hash": "74a68ca86b233d844c02c17695b964e3",
+    "semantic_hash": "74a68ca86b233d844c02c17695b964e3"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/utils/emailParser.js": {
+    "mtime": 1779826434.1490338,
+    "ast_hash": "b312df6997ab1167c6edf8a994fcf10d",
+    "semantic_hash": "b312df6997ab1167c6edf8a994fcf10d"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/utils/tokenHash.js": {
+    "mtime": 1779824690.0579398,
+    "ast_hash": "7705754ab61c6c7cb0b24ca696943339",
+    "semantic_hash": "7705754ab61c6c7cb0b24ca696943339"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/utils/text.js": {
+    "mtime": 1779824690.057803,
+    "ast_hash": "e1bae17bc0311f9a24029ca0ebcb6d83",
+    "semantic_hash": "e1bae17bc0311f9a24029ca0ebcb6d83"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/jobs/poller.js": {
+    "mtime": 1779824690.0555625,
+    "ast_hash": "a9f32f5414ad6bc0cfa71fb0caaf76db",
+    "semantic_hash": "a9f32f5414ad6bc0cfa71fb0caaf76db"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/handlers/systemHandlers.js": {
+    "mtime": 1779824690.0553715,
+    "ast_hash": "b58800b3783c3764ffdf1101a20fd07a",
+    "semantic_hash": "b58800b3783c3764ffdf1101a20fd07a"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/handlers/customIntentHandlers.js": {
+    "mtime": 1779824690.0552022,
+    "ast_hash": "9ed35a420115cc400d8695f404d6983a",
+    "semantic_hash": "9ed35a420115cc400d8695f404d6983a"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/services/mailService.js": {
+    "mtime": 1779824690.056423,
+    "ast_hash": "71f776ba0023e05174809166af456ead",
+    "semantic_hash": "71f776ba0023e05174809166af456ead"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/services/syncService.js": {
+    "mtime": 1779824690.0567648,
+    "ast_hash": "b6f08d36079bebbedb0cfc7297b1cd8b",
+    "semantic_hash": "b6f08d36079bebbedb0cfc7297b1cd8b"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/services/oauthRefreshService.js": {
+    "mtime": 1779824690.0566425,
+    "ast_hash": "541d99c285185d753d3b672e74fbd500",
+    "semantic_hash": "541d99c285185d753d3b672e74fbd500"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/services/authService.js": {
+    "mtime": 1779824690.0563056,
+    "ast_hash": "1504c2b5ea714becd078638de462bcde",
+    "semantic_hash": "1504c2b5ea714becd078638de462bcde"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/services/notificationService.js": {
+    "mtime": 1779824690.0565288,
+    "ast_hash": "6cca72406cda0089f6550d868959b994",
+    "semantic_hash": "6cca72406cda0089f6550d868959b994"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/services/accountService.js": {
+    "mtime": 1779824690.0561895,
+    "ast_hash": "e1ab3b2b390045216c43ac35129d5022",
+    "semantic_hash": "e1ab3b2b390045216c43ac35129d5022"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/store/repository.js": {
+    "mtime": 1779824690.0573497,
+    "ast_hash": "8db3353f2e7b69d5472b766ed23ffc57",
+    "semantic_hash": "8db3353f2e7b69d5472b766ed23ffc57"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/store/tursoClient.js": {
+    "mtime": 1779824690.0574741,
+    "ast_hash": "71e7e168aeebd6aaa4a8b10122b7c2db",
+    "semantic_hash": "71e7e168aeebd6aaa4a8b10122b7c2db"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/store/keyBuilder.js": {
+    "mtime": 1779824690.0571907,
+    "ast_hash": "a0644d1fb07ddb1b9443d26cc15449c1",
+    "semantic_hash": "a0644d1fb07ddb1b9443d26cc15449c1"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/custom/src/store/dynamoClient.js": {
+    "mtime": 1779824690.0570874,
+    "ast_hash": "1a7832ea9bb8462d154573910e03bcde",
+    "semantic_hash": "1a7832ea9bb8462d154573910e03bcde"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/skill.js": {
+    "mtime": 1779824690.061276,
+    "ast_hash": "af3c005e7dc69b7d54856f00c6883bc9",
+    "semantic_hash": "af3c005e7dc69b7d54856f00c6883bc9"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/config.js": {
+    "mtime": 1779824690.0587597,
+    "ast_hash": "a34d6570f1bfa030f916ea34dfa4176b",
+    "semantic_hash": "a34d6570f1bfa030f916ea34dfa4176b"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/connectors/imapConnector.js": {
+    "mtime": 1779826473.3667846,
+    "ast_hash": "f05e670a045303dd76d78199f17e5496",
+    "semantic_hash": "f05e670a045303dd76d78199f17e5496"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/connectors/gmailConnector.js": {
+    "mtime": 1779826445.3524802,
+    "ast_hash": "ca5d5d3c1cdb5cbbc1a1e2b6320ce017",
+    "semantic_hash": "ca5d5d3c1cdb5cbbc1a1e2b6320ce017"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/connectors/index.js": {
+    "mtime": 1779824690.0591362,
+    "ast_hash": "2f8fa862e0e41780e37d76e547d1d702",
+    "semantic_hash": "2f8fa862e0e41780e37d76e547d1d702"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/connectors/outlookConnector.js": {
+    "mtime": 1779824690.0592463,
+    "ast_hash": "fb646545ae44f36353803a6eadf6ed0a",
+    "semantic_hash": "fb646545ae44f36353803a6eadf6ed0a"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/connectors/popConnector.js": {
+    "mtime": 1779824690.0594122,
+    "ast_hash": "25f5f54b0db150980e33de5f3b48881f",
+    "semantic_hash": "25f5f54b0db150980e33de5f3b48881f"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/security/runtimeSecrets.js": {
+    "mtime": 1779824690.0602877,
+    "ast_hash": "eb4177ad253b162ff916b2339d054b61",
+    "semantic_hash": "eb4177ad253b162ff916b2339d054b61"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/security/cryptoService.js": {
+    "mtime": 1779824690.060129,
+    "ast_hash": "74a68ca86b233d844c02c17695b964e3",
+    "semantic_hash": "74a68ca86b233d844c02c17695b964e3"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/utils/emailParser.js": {
+    "mtime": 1779826416.3157792,
+    "ast_hash": "b312df6997ab1167c6edf8a994fcf10d",
+    "semantic_hash": "b312df6997ab1167c6edf8a994fcf10d"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/utils/tokenHash.js": {
+    "mtime": 1779824690.062265,
+    "ast_hash": "7705754ab61c6c7cb0b24ca696943339",
+    "semantic_hash": "7705754ab61c6c7cb0b24ca696943339"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/utils/text.js": {
+    "mtime": 1779824690.0621583,
+    "ast_hash": "e1bae17bc0311f9a24029ca0ebcb6d83",
+    "semantic_hash": "e1bae17bc0311f9a24029ca0ebcb6d83"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/jobs/poller.js": {
+    "mtime": 1779824690.0599194,
+    "ast_hash": "a9f32f5414ad6bc0cfa71fb0caaf76db",
+    "semantic_hash": "a9f32f5414ad6bc0cfa71fb0caaf76db"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/handlers/systemHandlers.js": {
+    "mtime": 1779824690.05974,
+    "ast_hash": "b58800b3783c3764ffdf1101a20fd07a",
+    "semantic_hash": "b58800b3783c3764ffdf1101a20fd07a"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/handlers/customIntentHandlers.js": {
+    "mtime": 1779826516.8751955,
+    "ast_hash": "ab63793a2b78a1f5acf3974d52ce3160",
+    "semantic_hash": "ab63793a2b78a1f5acf3974d52ce3160"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/services/mailService.js": {
+    "mtime": 1779824690.060798,
+    "ast_hash": "71f776ba0023e05174809166af456ead",
+    "semantic_hash": "71f776ba0023e05174809166af456ead"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/services/syncService.js": {
+    "mtime": 1779824690.06117,
+    "ast_hash": "b6f08d36079bebbedb0cfc7297b1cd8b",
+    "semantic_hash": "b6f08d36079bebbedb0cfc7297b1cd8b"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/services/oauthRefreshService.js": {
+    "mtime": 1779824690.0610354,
+    "ast_hash": "541d99c285185d753d3b672e74fbd500",
+    "semantic_hash": "541d99c285185d753d3b672e74fbd500"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/services/authService.js": {
+    "mtime": 1779824690.0606863,
+    "ast_hash": "1504c2b5ea714becd078638de462bcde",
+    "semantic_hash": "1504c2b5ea714becd078638de462bcde"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/services/notificationService.js": {
+    "mtime": 1779824690.06092,
+    "ast_hash": "6cca72406cda0089f6550d868959b994",
+    "semantic_hash": "6cca72406cda0089f6550d868959b994"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/services/accountService.js": {
+    "mtime": 1779824690.0605423,
+    "ast_hash": "e1ab3b2b390045216c43ac35129d5022",
+    "semantic_hash": "e1ab3b2b390045216c43ac35129d5022"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/store/repository.js": {
+    "mtime": 1779824690.0617259,
+    "ast_hash": "8db3353f2e7b69d5472b766ed23ffc57",
+    "semantic_hash": "8db3353f2e7b69d5472b766ed23ffc57"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/store/tursoClient.js": {
+    "mtime": 1779824690.06184,
+    "ast_hash": "71e7e168aeebd6aaa4a8b10122b7c2db",
+    "semantic_hash": "71e7e168aeebd6aaa4a8b10122b7c2db"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/store/keyBuilder.js": {
+    "mtime": 1779824690.0615675,
+    "ast_hash": "a0644d1fb07ddb1b9443d26cc15449c1",
+    "semantic_hash": "a0644d1fb07ddb1b9443d26cc15449c1"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/lambda/src/store/dynamoClient.js": {
+    "mtime": 1779824690.0614574,
+    "ast_hash": "1a7832ea9bb8462d154573910e03bcde",
+    "semantic_hash": "1a7832ea9bb8462d154573910e03bcde"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/INFO.md": {
+    "mtime": 1779824690.052491,
+    "ast_hash": "221ab9a92949784604827044ba95a70e",
+    "semantic_hash": "221ab9a92949784604827044ba95a70e"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/README.md": {
+    "mtime": 1779824690.0527818,
+    "ast_hash": "36996a058cfab14380e6dc09c4234e01",
+    "semantic_hash": "36996a058cfab14380e6dc09c4234e01"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/infra/aws-template.yaml": {
+    "mtime": 1779824690.0534842,
+    "ast_hash": "2d457c8dcfeaf61777111e896f196cb5",
+    "semantic_hash": "2d457c8dcfeaf61777111e896f196cb5"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/docs/ARCHITECTURE.md": {
+    "mtime": 1779824690.0530307,
+    "ast_hash": "1122b828a7a50e8da477083ce022f0bb",
+    "semantic_hash": "1122b828a7a50e8da477083ce022f0bb"
+  },
+  "/Users/subhajitrouy/Documents/Github/Alexa-Email-Reader/docs/DEPLOYMENT.md": {
+    "mtime": 1779824690.05318,
+    "ast_hash": "c1522f5dc52d4145cba6424cd397c99b",
+    "semantic_hash": "c1522f5dc52d4145cba6424cd397c99b"
+  }
+}
