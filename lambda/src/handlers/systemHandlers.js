@@ -55,7 +55,7 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'You can ask how many unread emails you have, read latest emails, read email one in full, switch accounts, or set polling interval to fifteen, thirty, or sixty minutes.';
+        const speakOutput = 'You can ask: how many unread emails do I have, read my latest emails, read emails from updates, read email one in full, archive email two, delete email three, mark email one as read, compose email to someone about a topic, save as draft, send draft, read drafts, switch accounts, or set polling interval.';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)

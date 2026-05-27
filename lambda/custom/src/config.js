@@ -28,5 +28,8 @@ module.exports = {
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
     microsoftClientId: process.env.MICROSOFT_CLIENT_ID || '',
     microsoftClientSecret: process.env.MICROSOFT_CLIENT_SECRET || '',
-    notificationsEnabled: process.env.NOTIFICATIONS_ENABLED !== 'false'
+    notificationsEnabled: process.env.NOTIFICATIONS_ENABLED !== 'false',
+    openRouterApiKey: process.env.OPENROUTER_API_KEY || '',
+    openRouterModel: process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3-0324:free',
+    openRouterBaseUrl: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1'
 };

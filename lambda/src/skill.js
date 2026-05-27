@@ -49,7 +49,13 @@ exports.handler = Alexa.SkillBuilders.custom()
         systemHandlers.LaunchRequestHandler,
         customHandlers.GetUnreadCountIntentHandler,
         customHandlers.ReadLatestEmailsIntentHandler,
+        customHandlers.ReadEmailsByCategoryIntentHandler,
         customHandlers.ReadEmailBodyIntentHandler,
+        customHandlers.EmailActionIntentHandler,
+        customHandlers.ComposeEmailIntentHandler,
+        customHandlers.ReadDraftIntentHandler,
+        customHandlers.SaveDraftIntentHandler,
+        customHandlers.SendDraftIntentHandler,
         customHandlers.ListLinkedAccountsIntentHandler,
         customHandlers.SwitchAccountIntentHandler,
         customHandlers.SetPollingIntervalIntentHandler,
@@ -61,5 +67,5 @@ exports.handler = Alexa.SkillBuilders.custom()
         systemHandlers.IntentReflectorHandler
     )
     .addErrorHandlers(systemHandlers.ErrorHandler)
-    .withCustomUserAgent('email-reader/v1.0')
+    .withCustomUserAgent('email-reader/v2.0')
     .lambda();

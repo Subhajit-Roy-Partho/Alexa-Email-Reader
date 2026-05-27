@@ -8,7 +8,7 @@ function getGoogleAuthorizeUrl(state) {
   url.searchParams.set('client_id', config.googleClientId);
   url.searchParams.set('redirect_uri', `${config.appBaseUrl}/api/providers/google/callback`);
   url.searchParams.set('response_type', 'code');
-  url.searchParams.set('scope', 'openid email profile https://www.googleapis.com/auth/gmail.readonly');
+  url.searchParams.set('scope', 'openid email profile https://www.googleapis.com/auth/gmail.modify');
   url.searchParams.set('access_type', 'offline');
   url.searchParams.set('prompt', 'consent');
   url.searchParams.set('state', state);

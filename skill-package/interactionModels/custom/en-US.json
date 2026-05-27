@@ -16,7 +16,9 @@
             "how many unread emails in {accountName}",
             "unread count",
             "check unread mail",
-            "unread emails"
+            "unread emails",
+            "how many new emails",
+            "any new mail"
           ]
         },
         {
@@ -36,7 +38,34 @@
             "read latest emails in {accountName}",
             "read my latest {limit} emails",
             "read my latest {limit} emails in {accountName}",
-            "read latest mail"
+            "read latest mail",
+            "check my inbox",
+            "show me my emails",
+            "what is in my inbox",
+            "get my new emails"
+          ]
+        },
+        {
+          "name": "ReadEmailsByCategoryIntent",
+          "slots": [
+            {
+              "name": "gmailCategory",
+              "type": "GMAIL_CATEGORY"
+            },
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            }
+          ],
+          "samples": [
+            "read emails from {gmailCategory}",
+            "read my {gmailCategory} emails",
+            "show {gmailCategory} emails",
+            "check {gmailCategory} tab",
+            "read {gmailCategory} messages",
+            "what is in my {gmailCategory} tab",
+            "emails from {gmailCategory} in {accountName}",
+            "read {gmailCategory} emails in {accountName}"
           ]
         },
         {
@@ -44,7 +73,7 @@
           "slots": [
             {
               "name": "emailIndex",
-              "type": "EMAIL_INDEX"
+              "type": "AMAZON.NUMBER"
             },
             {
               "name": "accountName",
@@ -54,8 +83,119 @@
           "samples": [
             "read email {emailIndex}",
             "read email {emailIndex} in full",
+            "read email {emailIndex} completely",
             "read email {emailIndex} from {accountName}",
-            "read full body of email {emailIndex}"
+            "read full body of email {emailIndex}",
+            "read the {emailIndex} email",
+            "read the {emailIndex} email in full",
+            "read the {emailIndex} email completely",
+            "open email {emailIndex}",
+            "open the {emailIndex} email",
+            "play email {emailIndex}",
+            "read mail {emailIndex}",
+            "read the {emailIndex} mail",
+            "read the {emailIndex} mail completely",
+            "read mail {emailIndex} in full",
+            "read {emailIndex} in full",
+            "hear email {emailIndex}",
+            "read email number {emailIndex}"
+          ]
+        },
+        {
+          "name": "EmailActionIntent",
+          "slots": [
+            {
+              "name": "emailIndex",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "emailAction",
+              "type": "EMAIL_ACTION"
+            },
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            }
+          ],
+          "samples": [
+            "{emailAction} email {emailIndex}",
+            "{emailAction} the {emailIndex} email",
+            "{emailAction} mail {emailIndex}",
+            "mark email {emailIndex} as {emailAction}",
+            "mark the {emailIndex} email as {emailAction}",
+            "mark email {emailIndex} {emailAction}",
+            "{emailAction} email {emailIndex} from {accountName}",
+            "please {emailAction} email {emailIndex}"
+          ]
+        },
+        {
+          "name": "ComposeEmailIntent",
+          "slots": [
+            {
+              "name": "recipientName",
+              "type": "AMAZON.SearchQuery"
+            },
+            {
+              "name": "emailTopic",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "compose email to {recipientName} about {emailTopic}",
+            "write email to {recipientName} about {emailTopic}",
+            "draft email to {recipientName} about {emailTopic}",
+            "compose a message to {recipientName} about {emailTopic}",
+            "write an email to {recipientName} regarding {emailTopic}",
+            "send email to {recipientName} about {emailTopic}",
+            "create email to {recipientName} about {emailTopic}"
+          ]
+        },
+        {
+          "name": "ReadDraftIntent",
+          "slots": [
+            {
+              "name": "accountName",
+              "type": "ACCOUNT_NAME"
+            }
+          ],
+          "samples": [
+            "read draft",
+            "read my draft",
+            "read the draft",
+            "show drafts",
+            "list my drafts",
+            "read my drafts",
+            "what drafts do I have",
+            "show me my drafts"
+          ]
+        },
+        {
+          "name": "SaveDraftIntent",
+          "samples": [
+            "save as draft",
+            "save draft",
+            "save it as a draft",
+            "save the email as draft",
+            "keep it as draft",
+            "save to drafts"
+          ]
+        },
+        {
+          "name": "SendDraftIntent",
+          "slots": [
+            {
+              "name": "draftIndex",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "send draft",
+            "send the draft",
+            "send it",
+            "send draft {draftIndex}",
+            "send the {draftIndex} draft",
+            "yes send it",
+            "go ahead and send"
           ]
         },
         {
@@ -64,7 +204,8 @@
             "list linked accounts",
             "what accounts are linked",
             "list my mailboxes",
-            "which email accounts are connected"
+            "which email accounts are connected",
+            "show my accounts"
           ]
         },
         {
@@ -130,76 +271,37 @@
         {
           "name": "ACCOUNT_NAME",
           "values": [
-            {
-              "name": {
-                "value": "personal"
-              }
-            },
-            {
-              "name": {
-                "value": "work"
-              }
-            },
-            {
-              "name": {
-                "value": "gmail"
-              }
-            },
-            {
-              "name": {
-                "value": "outlook"
-              }
-            }
+            { "name": { "value": "personal" } },
+            { "name": { "value": "work" } },
+            { "name": { "value": "gmail" } },
+            { "name": { "value": "outlook" } }
           ]
         },
         {
           "name": "POLLING_INTERVAL_MINUTES",
           "values": [
-            {
-              "name": {
-                "value": "15"
-              }
-            },
-            {
-              "name": {
-                "value": "30"
-              }
-            },
-            {
-              "name": {
-                "value": "60"
-              }
-            }
+            { "name": { "value": "15" } },
+            { "name": { "value": "30" } },
+            { "name": { "value": "60" } }
           ]
         },
         {
-          "name": "EMAIL_INDEX",
+          "name": "GMAIL_CATEGORY",
           "values": [
-            {
-              "name": {
-                "value": "1"
-              }
-            },
-            {
-              "name": {
-                "value": "2"
-              }
-            },
-            {
-              "name": {
-                "value": "3"
-              }
-            },
-            {
-              "name": {
-                "value": "4"
-              }
-            },
-            {
-              "name": {
-                "value": "5"
-              }
-            }
+            { "name": { "value": "primary", "synonyms": ["main", "inbox"] } },
+            { "name": { "value": "updates", "synonyms": ["update"] } },
+            { "name": { "value": "promotions", "synonyms": ["promotion", "deals", "offers", "promotional"] } },
+            { "name": { "value": "social", "synonyms": ["social media", "notifications"] } },
+            { "name": { "value": "forums", "synonyms": ["forum", "groups"] } }
+          ]
+        },
+        {
+          "name": "EMAIL_ACTION",
+          "values": [
+            { "name": { "value": "archive" } },
+            { "name": { "value": "delete", "synonyms": ["trash", "remove"] } },
+            { "name": { "value": "read", "synonyms": ["mark as read", "mark read"] } },
+            { "name": { "value": "unread", "synonyms": ["mark as unread", "mark unread"] } }
           ]
         }
       ]
