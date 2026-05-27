@@ -234,12 +234,40 @@
           ]
         },
         {
+          "name": "TestNotificationIntent",
+          "samples": [
+            "send test notification",
+            "test notification",
+            "send me a test notification",
+            "trigger a test notification",
+            "check notification delivery"
+          ]
+        },
+        {
           "name": "AccountLinkingHelpIntent",
           "samples": [
             "how do I link my account",
             "help me connect my email",
             "link my email account",
             "account linking help"
+          ]
+        },
+        {
+          "name": "RelinkAccountIntent",
+          "samples": [
+            "relink my account",
+            "link account again",
+            "reconnect alexa account",
+            "send link card"
+          ]
+        },
+        {
+          "name": "UnlinkAccountIntent",
+          "samples": [
+            "unlink my account",
+            "disconnect my account",
+            "remove account link",
+            "unlink email reader account"
           ]
         },
         {
